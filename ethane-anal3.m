@@ -2,7 +2,7 @@
 clear classes;
 load('ethane4/ethaneDat.mat');
 %%
-ipar = 7;
+ipar = 6;
 disp(['starting fit on geometry ',num2str(ipar)]);
 m = Model3(LL{ipar,1},LL{ipar,2},LL{ipar,3});
 
@@ -13,7 +13,7 @@ m.addKEmodBonded(1,6,[1],[1 2],mixKE);
 m.addKEmodBonded(6,6,[1 2],[1 2],mixKE);
 
 f1 = Fitme;
-f1.addFrag(m,HL{ipar,3});
+f1.addFrag(m,HL{ipar,1});
 f1.exactDensity = 1;
 f1.includeEN = zeros(1,m.natom);
 

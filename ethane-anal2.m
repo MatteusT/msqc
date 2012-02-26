@@ -119,7 +119,7 @@ for ipar = 1:7
    mod{ipar} = Model2(LL{ipar,1},LL{ipar,2},LL{ipar,3});
    mod{ipar}.sepKE = 1;
    mod{ipar}.sepSP = 1;
-   f1.addFrag(mod{ipar},HL{ipar,3});
+   f1.addFrag(mod{ipar},HL{ipar,1});
 end
 f1.exactDensity = 1;
 %pt{1} = [0 0.75 0.75 0 0.75 0.75 0.75 0.75  0  0  0 0.75 0.75 0 0 0];
@@ -137,9 +137,9 @@ disp(['KE=0 SP=0 rms err = ',num2str(sqrt(err{2}*err{2}')/nerr)]);
 %%
 f1.corrPlot(0);
 %% Fit each geometry separately
-clear classes;
+%clear classes;
 load('ethane4/ethanedat.mat');
-for ipar = 7:7
+for ipar = 6:7
    disp(['starting fit on geometry ',num2str(ipar)]);
    f1 = Fitme;
    mod{ipar} = Model2(LL{ipar,1},LL{ipar,2},LL{ipar,3});
@@ -150,10 +150,10 @@ for ipar = 7:7
    f1.addFrag(mod{ipar},HL{ipar,1});
    f1.exactDensity = 1;
    nfitpar = mod{ipar}.npar;
-   %start = zeros(1,nfitpar);
+   start = zeros(1,nfitpar);
    %results from fitting ipar=7 to HL{ipar,3}
    %start = [-0.1056   -0.0251   -0.1511    0.2214    0.1249   -2.1994   -0.0109   -0.0758    0.0000    0.0009    0.0153    0.2796   -0.7136   -0.0092 -0.1874    0.9148];
-   start = [0.62574     0.47368      0.7247     -1.1403      0.1813     0.40036    -0.45548    -0.49231     -0.4414    -0.44616    -0.44858     0.17348      0.1549    0.045701    -0.07031    0.076608 0.0 0.0 0.0];
+   %start = [0.62574     0.47368      0.7247     -1.1403      0.1813     0.40036    -0.45548    -0.49231     -0.4414    -0.44616    -0.44858     0.17348      0.1549    0.045701    -0.07031    0.076608 0.0 0.0 0.0];
    limits = 3 * ones(1,nfitpar);
    pt{ipar} = lsqnonlin(@f1.err, start,-limits,limits);
    err{ipar} = f1.errDiffs(pt{ipar});

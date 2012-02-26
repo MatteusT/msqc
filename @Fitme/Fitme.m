@@ -91,9 +91,9 @@ classdef Fitme < handle
                end
             end
          end
-         disp(['RMS err = ',num2str(sqrt(res*res')/ic)]);
-         figure(101)
-         plot(res,'r.');
+%          disp(['RMS err = ',num2str(sqrt(res*res')/ic)]);
+%          figure(101)
+%          plot(res,'r.');
       end
       function res = errDiffs(obj,par)
          disp(['Fitme.err called with par = ',num2str(par)]);
@@ -145,8 +145,8 @@ classdef Fitme < handle
                   end
                end
             end
-            figure(101)
-            plot(res,'r.');
+%             figure(101)
+%             plot(res,'r.');
          end
          disp(['RMS err = ',num2str(sqrt(res*res')/ic)]);
       end
