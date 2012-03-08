@@ -59,6 +59,18 @@ classdef Mixer < handle
             c1 = (tanh(x)+1)/2.0;
             c2 = 1-c1;
             res = c2 * v1 + c1 * v2 + y*diag(ones(size(v1,1),1)); % try it :)
+         elseif (obj.mixType == 4)
+            error('still working on mixType 4');
+            x0 = obj.par(1);
+            xslope = obj.par(2);
+            density = model.density(ienv);
+            % get matrix with only diagonal elements
+            occupancy = trace(density(ii,jj));
+            v1d = diag(diag(v1d));
+            v2d = diag(diag(v2d));
+            v1o = v1-v1d;
+            v2o = v2-v2d;
+            res = ((1.0-x)/2.0) * v1 + ((1.0+x)/2.0) * v2;
          else
             error(['unknown mix type in Mixer: ',num2str(obj.mixType)]);
          end
