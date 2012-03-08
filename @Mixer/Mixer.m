@@ -29,8 +29,8 @@ classdef Mixer < handle
          end
       end
       function res = mix(obj, v1, v2, model, ii, jj, ienv)
-         x = obj.par(1);
          if (obj.mixType == 0)
+               x = obj.par(1);
             % mix objects v1 and v2, using parameter x.
             %   for x << 0, we get v1, and x>>0 we get v2, with the
             %   switch from v1 to v2 occuring mostly as x=-1..1
@@ -38,6 +38,7 @@ classdef Mixer < handle
             c2 = 1-c1;
             res = c2 * v1 + c1 * v2;
          elseif (obj.mixType == 1)
+            x = obj.par(1);
             % want linear mix, with (v1+v2)/2 when x=0
             % res = (v1+v2)/2 + x (v2-v1)/2
             % The bounds are: res = v1 at x = -1;
@@ -51,6 +52,13 @@ classdef Mixer < handle
             xslope = obj.par(2);
             x = x0 + xslope*ch;
             res = ((1.0-x)/2.0) * v1 + ((1.0+x)/2.0) * v2;
+         elseif (obj.mixType == 3)
+             x = obj.par(1);
+             y = obj.par(2);
+             %input of a constant y
+            c1 = (tanh(x)+1)/2.0;
+            c2 = 1-c1;
+            res = c2 * v1 + c1 * v2 + y*diag(ones(size(v1,1),1)); % try it :)
          else
             error(['unknown mix type in Mixer: ',num2str(obj.mixType)]);
          end
