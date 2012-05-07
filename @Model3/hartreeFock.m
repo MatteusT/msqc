@@ -80,18 +80,18 @@ while (~finished) %step 11 -- Test convergence
 %       H1 = obj.H1(ienv);
 %    end
    %step 5 -- Build 2-electron components of Fock matrix
-   G = zeros(Nbasis);
-   %     for i = 1:Nbasis
-   %         for j = 1:Nbasis
-   %             for k = 1:Nbasis
-   %                 for l = 1:Nbasis
-   %
-   %                 G(i,j) = G(i,j) + P(k,l)*(H2(i,j,l,k)-(1/2)*H2(i,k,l,j));
-   %
-   %                 end
-   %             end
-   %         end
-   %     end
+%    G = zeros(Nbasis);
+%        for i = 1:Nbasis
+%            for j = 1:Nbasis
+%                for k = 1:Nbasis
+%                    for l = 1:Nbasis
+%    
+%                    G(i,j) = G(i,j) + P(k,l)*(H2(sym_hash(sym_hash(i,j),sym_hash(k,l)))-(1/2)*H2((sym_hash(sym_hash(i,j),sym_hash(k,l)))));
+%    
+%                    end
+%                end
+%            end
+%        end
    for i=1:Nbasis
       for j=1:Nbasis
          t1 = sum(sum( P'.* obj.H2j{i,j} ));

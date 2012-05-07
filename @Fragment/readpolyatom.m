@@ -137,6 +137,7 @@ labh2 = char( fread(fid1,size,'char*1'))';
 size2 = fread(fid1,1,'integer*4');
 
 H2 = zeros(Nbasis,Nbasis,Nbasis,Nbasis);
+% H2 = zeros(1,sym_hash(sym_hash(nbasis,nbasis),sym_hash(nbasis,nbasis)));
 last = 0;
 while(~(last==1))
    size = fread(fid1,1,'integer*4');
@@ -157,6 +158,10 @@ while(~(last==1))
       j=ib(i1);
       k=ic(i1);
       l=id(i1);
+%       ij = sym_hash(i,j);
+%       kl = sym_hash(k,l);
+%       ijkl = sym_hash(ij,kl);
+%       H2(ijkl) = v2(i1);
       H2(i,j,k,l) = v2(i1);
       H2(j,i,k,l) = v2(i1);
       H2(i,j,l,k) = v2(i1);
