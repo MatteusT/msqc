@@ -62,3 +62,13 @@ pt = lsqnonlin(@f1.err, start,-limits,limits,options);
 %    options.FunTol = 1.0e-6;
 %    options.XTol = 1.0e-5;
 %    [pfit, Ssq, CNT, Res, XY] = LMFnlsq(@f1.err,start',options);
+
+%%  ethane fit
+f1 = makeFitme('h2',[],'ch4',[],'ethane',1:25);
+disp('Starting fit ethane');
+start = zeros(1,f1.npar);
+%limits = [4 20 4 20 4 20 4 4 4 20 4 20 4 20 4 4 4 4];
+limits = [];
+options = optimset('DiffMinChange',1.0e-5);
+pt = lsqnonlin(@f1.err, start,-limits,limits,options);
+
