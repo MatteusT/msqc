@@ -23,8 +23,8 @@ classdef Model3 < handle
         rcart   % (3,natom) cartesian coordinates of the atoms
         nenv
         
-        %       H2j     % {nbasis,nbasis} cell array of coulomb integrals
-        %       H2k     % {nbasis,nbasis} cell array of exchange integrals
+        H2j     % {nbasis,nbasis} cell array of coulomb integrals
+        H2k     % {nbasis,nbasis} cell array of exchange integrals
         
         nbasis  % number of atomic (and molecular) basis functions
         basisAtom  % (nbasis,1) atom # on which the function is centered
@@ -102,24 +102,24 @@ classdef Model3 < handle
             end
                      res.H2j = cell(res.nbasis,res.nbasis);
                      res.H2k = cell(res.nbasis,res.nbasis);
-                     H2ij = zeros(res.nbasis,res.nbasis);
-                     H2kl = zeros(res.nbasis,res.nbasis);
+%                      H2ij = zeros(res.nbasis,res.nbasis);
+%                      H2kl = zeros(res.nbasis,res.nbasis);
 %             for i=1:res.nbasis
 %                 for j=1:res.nbasis
 %                     for k = 1:res.nbasis
 %                         for l = 1:res.nbasis
-%                             H2ij(k,l) =(frag_.H2(sym_hash(sym_hash(i,j),sym_hash(k,l))));
-%                             H2kl(k,l) =(frag_.H2(sym_hash(sym_hash(i,k),sym_hash(l,j))));           
+%                             res.H2ij(k,l) =(frag_.H2(sym_hash(sym_hash(i,j),sym_hash(k,l))));
+%                             res.H2kl(k,l) =(frag_.H2(sym_hash(sym_hash(i,k),sym_hash(l,j))));           
 %                         end    
 %                     end
 %                     res.H2j{i,j} = squeeze(H2ij);
 %                     res.H2k{i,j} = squeeze(H2kl);
 %                 end
 %             end
-        for i=1:nbasis
-            for j=1:nbasis
-              H2j{i,j} = squeeze(frag_.H2(i,j,:,:));
-              H2k{i,j} = squeeze(frag_.H2(i,:,:,j));
+        for i=1:res.nbasis
+            for j=1:res.nbasis
+              res.H2j{i,j} = squeeze(frag_.H2(i,j,:,:));
+              res.H2k{i,j} = squeeze(frag_.H2(i,:,:,j));
             end
         end
             

@@ -73,8 +73,8 @@ if (~isempty(geomsH2))
    end
 end
 if (~isempty(geomsEthane))
+   load([dataDir,'/ethanerDat.mat']);
    for i = geomsEthane
-      load([dataDir,'/ethaneDat.mat']);
       ic = ic+1;
       plotNumber(1,ic) = 802 + 10 * (doPlot-1);
       for j = 1:size(LL,2)

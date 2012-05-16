@@ -92,6 +92,8 @@ while (~finished) %step 11 -- Test convergence
 %                end
 %            end
 %        end
+
+G = zeros(Nbasis,Nbasis);
    for i=1:Nbasis
       for j=1:Nbasis
          t1 = sum(sum( P'.* obj.H2j{i,j} ));
