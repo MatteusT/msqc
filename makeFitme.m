@@ -18,6 +18,7 @@ function fitme = makeFitme(varargin)
 %  deltarho 1                based charge dependence on charges induced
 %                            by field
 %  enstruct  []              structure with enmods
+%  enstruct1 []              structure with enmods (1 oper only)
 %  kestruct  []              structure with kemods
 %  testFitme []              Fitme object with test data
 
@@ -34,16 +35,23 @@ nhl = checkForInput(varargin,'nhl',1);
 doPlot = checkForInput(varargin,'plot',1);
 % environments to include in the fit
 envs = checkForInput(varargin,'envs',0:20); 
-geomsH2 = checkForInput(varargin,'h2',2:7); % allowed range is 1:7
+geomsH2 = checkForInput(varargin,'h2',[]); % allowed range is 1:7
 geomsCH4 = checkForInput(varargin,'ch4',[]); % allowed range is 1:19
 geomsEthane = checkForInput(varargin,'ethane',[]); % allowed range is 1:7
 geomsEthylene = checkForInput(varargin,'ethylene',[]); % allowed range is 1:7
+geomsPropane = checkForInput(varargin,'propane',[]); % allowed range is 1:7
+geomsPropene = checkForInput(varargin,'propene',[]); % allowed range is 1:9
 includeKEmods = checkForInput(varargin,'kemods',1);
 includeENmods = checkForInput(varargin,'enmods',1);
 useDeltaCharges = checkForInput(varargin,'deltarho',1);
 enstruct = checkForInput(varargin,'enstruct',[]);
+enstruct1 = checkForInput(varargin,'enstruct1',[]);
 kestruct = checkForInput(varargin,'kestruct',[]);
 testFitme = checkForInput(varargin,'testFitme',[]);
+
+if (~isempty(enstruct) && ~isempty(enstruct1))
+   error('Do not set both enstruct and enstruct1');
+end
 
 % Load data
 LL1 = cell(0,0);
@@ -94,6 +102,28 @@ if (~isempty(geomsEthylene))
       HL1{ic,1} = HL{i,nhl};
    end
 end
+if (~isempty(geomsPropane))
+   for i = geomsPropane
+      load([dataDir,'/propaneDat.mat'], 'LL', 'HL');
+      ic = ic+1;
+      plotNumber(1,ic) = 804 + 10 * (doPlot-1);
+      for j = 1:size(LL,2)
+         LL1{ic,j} = LL{i,j};
+      end
+      HL1{ic,1} = HL{i,nhl};
+   end
+end
+if (~isempty(geomsPropene))
+   for i = geomsPropene
+      load([dataDir,'/propeneDat.mat'], 'LL', 'HL');
+      ic = ic+1;
+      plotNumber(1,ic) = 805 + 10 * (doPlot-1);
+      for j = 1:size(LL,2)
+         LL1{ic,j} = LL{i,j};
+      end
+      HL1{ic,1} = HL{i,nhl};
+   end
+end
 params = 1:ic;
 LL = LL1;
 HL = HL1;
@@ -137,7 +167,7 @@ if (includeKEmods)
    end
 end
 if (includeENmods)
-   if (size(enstruct,1) == 0)
+   if (isempty(enstruct) && isempty(enstruct1))
       mixENdiagH = Mixer([0 0],2,'ENdiagH');
       mixENdiagC = Mixer([0 0],2,'ENdiagC');
       mixENdiagCp = Mixer([0 0],2,'ENdiagCp');
@@ -154,7 +184,7 @@ if (includeENmods)
          m{ipar}.addENmodBonded(1,6,1,2,mixENbondCHp);
          m{ipar}.addENmodBonded(6,6,[1 2],[1 2],mixENbondCC);
       end
-   else
+   elseif (size(enstruct,1) == 1)
       for ipar = params
          m{ipar}.addENmodDiag(1,1,enstruct.H);
          m{ipar}.addENmodDiag(6,1,enstruct.Cs);
@@ -165,7 +195,21 @@ if (includeENmods)
          m{ipar}.addENmodBonded(6,6,1,1,enstruct.CsCs);
          m{ipar}.addENmodBonded(6,6,1,2,enstruct.CsCp);
          m{ipar}.addENmodBonded(6,6,2,2,enstruct.CpCp);
-      end      
+      end
+   elseif (size(enstruct1,1) == 1)
+      for ipar = params
+         m{ipar}.addENmodDiag(1,1,enstruct.H);
+         m{ipar}.addENmodDiag(6,1,enstruct.Cs);
+         m{ipar}.addENmodDiag(6,2,enstruct.Cp);
+         m{ipar}.addENmodBonded(1,1,1,1,enstruct.HH);
+         m{ipar}.addENmodBonded1(6,1,1,1,enstruct.CsH);
+         m{ipar}.addENmodBonded1(6,1,2,1,enstruct.CpH);
+         m{ipar}.addENmodBonded1(1,6,1,1,enstruct.HCs);
+         m{ipar}.addENmodBonded1(1,6,1,2,enstruct.HCp);
+         m{ipar}.addENmodBonded(6,6,1,1,enstruct.CsCs);
+         m{ipar}.addENmodBonded(6,6,1,2,enstruct.CsCp);
+         m{ipar}.addENmodBonded(6,6,2,2,enstruct.CpCp);
+      end
    end
 end
 if (useDeltaCharges)
@@ -186,6 +230,8 @@ fitme.includeEN = includeENmods * ones(1,6);
 fitme.setEnvs(envs);
 if (doPlot > 0)
    fitme.plot = 1;
+else
+   fitme.plot = 0;
 end
 fitme.testFitme = testFitme;
 
