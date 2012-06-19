@@ -69,17 +69,6 @@ classdef Mixer < handle
             xslope = obj.par(2);
             x = x0 + xslope*ch;
             res = ((1.0-x)/2.0) * v1 + ((1.0+x)/2.0) * v2;
-% <<<<<<< HEAD
-%          elseif (obj.mixType == 3)
-%              x = obj.par(1);
-%              y = obj.par(2);
-%              %input of a constant y
-%             c1 = (tanh(x)+1)/2.0;
-%             c2 = 1-c1;
-%             res = c2 * v1 + c1 * v2 + y*diag(ones(size(v1,1),1)); % try it :)
-%          elseif (obj.mixType == 4)
-%             %error('still working on mixType 4');
-% =======
          elseif (obj.mixType == 3) 
             % bond order dependent mixing
             iatom = model.basisAtom(ii(1));
@@ -101,16 +90,16 @@ classdef Mixer < handle
             v1o = v1-v1d;
             v2o = v2-v2d;
             res = ((1.0-x)/2.0) * v1 + ((1.0+x)/2.0) * v2;
-         elseif (obj.mixType == 5 )
-            ch = model.charges(iatom,ienv+1);
-            x0 = obj.par(1);
-            xslope = obj.par(2);
-            x = x0 + xslope*ch;
-            y = obj.par(3);
-            %input of a constant y
-            c1 = (tanh(x)+1)/2.0;
-            c2 = 1-c1;
-            res = c2 * v1 + c1 * v2 + y*diag(ones(size(v1,1),1)); % try it :) 
+%          elseif (obj.mixType == 5 )
+%             ch = model.charges(iatom,ienv+1);
+%             x0 = obj.par(1);
+%             xslope = obj.par(2);
+%             x = x0 + xslope*ch;
+%             y = obj.par(3);
+%             %input of a constant y
+%             c1 = (tanh(x)+1)/2.0;
+%             c2 = 1-c1;
+%             res = c2 * v1 + c1 * v2 + y*diag(ones(size(v1,1),1)); % try it :) 
          else
             error(['unknown mix type in Mixer: ',num2str(obj.mixType)]);
          end
