@@ -421,5 +421,13 @@ classdef Model3 < handle
       function res = S(obj)
          res = obj.frag.S;
       end
+      function updateChBO(obj)
+            % Updates charges and bond orders
+            obj.solveHF;
+            for ienv = 0:obj.nenv
+                obj.charges(:,ienv+1) = obj.mcharge(ienv)';
+                obj.bondOrders(:,:,ienv+1) = obj.calcBO(ienv);
+            end
+      end
    end % methods
 end %

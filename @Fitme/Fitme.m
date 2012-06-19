@@ -122,6 +122,11 @@ classdef Fitme < handle
             ic = ic + np;
          end
       end
+      function initializeChBO(obj)
+          for i=1:obj.nmodels
+          obj.models{i}.updateChBO;
+          end
+      end
       function setPars(obj,par)
          % sets parameters, and updates densities
          if (size(par,2) ~= obj.npar)
