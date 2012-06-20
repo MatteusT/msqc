@@ -1,6 +1,6 @@
 %% Fitting multiple molecules, using makeFitme
 clear classes;
-topDir = 'tmpE2debug/';
+topDir = 'tmp/';
 trainC{1}  = {'h2',2:7,'envs',1:10};
 testC{1} = {'h2',2:7,'envs',20:30};
 %trainC{1}  = {'h2',[],'ch4',1:19,'envs',1:10};
@@ -16,7 +16,7 @@ testC{3} = {'h2',[],'ethylene',1:7,'envs',20:30};
 filePrefix{3} = 'c2h4z2';
 
 trainC{4}  = {'h2',[],'ch4',1:7,'ethane',1:7,'envs',1:10};
-testC{4} = {'h2',[],'ch4',1:7,'ethane',1:7,'envs',20:30};
+testC{4} = {'h2',[],'ch4',1:7,'ethane',1:7,'envs',15:25};
 filePrefix{4} = 'ch4-c2h6';
 
 trainC{5}  = {'h2',[],'ch4',1:7,'ethane',1:7,'ethylene',1:7,'envs',1:10};
@@ -33,7 +33,7 @@ filePrefix{7} = 'ch4f-c2h6-c2h4';
 
 commonIn = {};
 
-for iC = 1:1
+for iC = 4
    trainIn = trainC{iC};
    testIn = testC{iC};
    filePre = filePrefix{iC};
@@ -116,11 +116,17 @@ for iC = 1:1
       diary on;
       tic
       start = f1.getPars;
-      [pt,resnorm,residual,exitflag,output,lambda,jacobian] = ...
-         lsqnonlin(@f1.err, start,-limits,limits,options);
-      clockTime = toc
-      pt
-      resnorm
+        [pt,resnorm,residual,exitflag,output,lambda,jacobian] = ...
+            lsqnonlin(@f1.err, start,-limits,limits,options);
+        f1.setPars(pt);
+        f1.initializeChBO
+        [pt2,resnorm2,residual,exitflag,output,lambda,jacobian] = ...
+            lsqnonlin(@f1.err, start,-limits,limits,options);
+        clockTime = toc
+        pt
+        pt2
+        resnorm
+        resnorm2
       f1.printMixers;
       save([dataDir,'all.mat']);
       diary off;

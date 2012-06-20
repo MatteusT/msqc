@@ -40,6 +40,8 @@ classdef Model3 < handle
         mixers     % (1,n)   cell array of mixers that are currently in use
         KEmods     % {1,n}   cell array of modifications to KE operator
         ENmods   % {natom}{1,n} cell array of modifications to H1en opers
+        H2mods   % cell array of mixers that are currently in use
+        
         % a modification has the following members
         %   ilist : modify ilist x jlist elements
         %   jlist :
