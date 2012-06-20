@@ -130,11 +130,6 @@ classdef Fitme < handle
             ic = ic + np;
          end
       end
-      function initializeChBO(obj)
-          for i=1:obj.nmodels
-          obj.models{i}.updateChBO;
-          end
-      end
       function setPars(obj,par)
          % sets parameters, and updates densities
          if (size(par,2) ~= obj.npar)
@@ -153,7 +148,8 @@ classdef Fitme < handle
       end
       function dpar = updateDensity(obj)
          par = obj.getPars;
-         if (size(obj.parHF,1) == 0 || (length(obj.parHF) ~= length(par) ))
+         if ((size(obj.parHF,1) == 0) || ...
+            (length(obj.parHF) ~= length(par) ) )
             dpar = 1e10;
          else
             dpar = max(abs(obj.parHF-par));
@@ -357,6 +353,7 @@ classdef Fitme < handle
                obj.models{imod}.Een(iatom,ienv);
             res = [res , temp];
          end
+         res = -1.0 * norm(res);
       end
       function res = armError(obj,iarm)
          res = 0;
