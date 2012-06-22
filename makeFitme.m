@@ -20,6 +20,7 @@ function fitme = makeFitme(varargin)
 %  enstruct  []              structure with enmods
 %  enstruct1 []              structure with enmods (1 oper only)
 %  kestruct  []              structure with kemods
+%  e2struct  []              structure with e2mods
 %  testFitme []              Fitme object with test data
 
 % To test parsing of input, use:
@@ -34,7 +35,7 @@ nhl = checkForInput(varargin,'nhl',1);
 % plot results as fitting occurs
 doPlot = checkForInput(varargin,'plot',1);
 % environments to include in the fit
-envs = checkForInput(varargin,'envs',0:20); 
+envs = checkForInput(varargin,'envs',0:20);
 geomsH2 = checkForInput(varargin,'h2',[]); % allowed range is 1:7
 geomsCH4 = checkForInput(varargin,'ch4',[]); % allowed range is 1:19
 geomsEthane = checkForInput(varargin,'ethane',[]); % allowed range is 1:7
@@ -47,10 +48,11 @@ useDeltaCharges = checkForInput(varargin,'deltarho',1);
 enstruct = checkForInput(varargin,'enstruct',[]);
 enstruct1 = checkForInput(varargin,'enstruct1',[]);
 kestruct = checkForInput(varargin,'kestruct',[]);
+e2struct = checkForInput(varargin,'e2struct',[]);
 testFitme = checkForInput(varargin,'testFitme',[]);
 
 if (~isempty(enstruct) && ~isempty(enstruct1))
-   error('Do not set both enstruct and enstruct1');
+    error('Do not set both enstruct and enstruct1');
 end
 
 % Load data
@@ -59,70 +61,70 @@ HL1 = cell(0,0);
 ic = 0;
 plotNumber = [];
 if (~isempty(geomsCH4))
-   load([dataDir,'/ch4Dat.mat']);
-   for i = geomsCH4
-      ic = ic+1;
-      plotNumber(1,ic) = 801 + 10 * (doPlot-1);
-      for j = 1:size(LL,2)
-         LL1{ic,j} = LL{i,j};
-      end
-      HL1{ic,1} = HL{i,nhl};
-   end
+    load([dataDir,'/ch4Dat.mat']);
+    for i = geomsCH4
+        ic = ic+1;
+        plotNumber(1,ic) = 801 + 10 * (doPlot-1);
+        for j = 1:size(LL,2)
+            LL1{ic,j} = LL{i,j};
+        end
+        HL1{ic,1} = HL{i,nhl};
+    end
 end
 if (~isempty(geomsH2))
-   load([dataDir,'/h2Dat.mat']);
-   for i = geomsH2
-      ic = ic+1;
-      plotNumber(1,ic) = 800 + 10 * (doPlot-1);
-      for j = 1:size(LL,2)
-         LL1{ic,j} = LL{i,j};
-      end
-      HL1{ic,1} = HL{i,nhl};
-   end
+    load([dataDir,'/h2Dat.mat']);
+    for i = geomsH2
+        ic = ic+1;
+        plotNumber(1,ic) = 800 + 10 * (doPlot-1);
+        for j = 1:size(LL,2)
+            LL1{ic,j} = LL{i,j};
+        end
+        HL1{ic,1} = HL{i,nhl};
+    end
 end
 if (~isempty(geomsEthane))
-   load([dataDir,'/ethanerDat.mat']);
-   for i = geomsEthane
-      ic = ic+1;
-      plotNumber(1,ic) = 802 + 10 * (doPlot-1);
-      for j = 1:size(LL,2)
-         LL1{ic,j} = LL{i,j};
-      end
-      HL1{ic,1} = HL{i,nhl};
-   end
+    load([dataDir,'/ethanerDat.mat']);
+    for i = geomsEthane
+        ic = ic+1;
+        plotNumber(1,ic) = 802 + 10 * (doPlot-1);
+        for j = 1:size(LL,2)
+            LL1{ic,j} = LL{i,j};
+        end
+        HL1{ic,1} = HL{i,nhl};
+    end
 end
 if (~isempty(geomsEthylene))
-   for i = geomsEthylene
-      load([dataDir,'/ethyleneDat.mat']);
-      ic = ic+1;
-      plotNumber(1,ic) = 803 + 10 * (doPlot-1);
-      for j = 1:size(LL,2)
-         LL1{ic,j} = LL{i,j};
-      end
-      HL1{ic,1} = HL{i,nhl};
-   end
+    for i = geomsEthylene
+        load([dataDir,'/ethyleneDat.mat']);
+        ic = ic+1;
+        plotNumber(1,ic) = 803 + 10 * (doPlot-1);
+        for j = 1:size(LL,2)
+            LL1{ic,j} = LL{i,j};
+        end
+        HL1{ic,1} = HL{i,nhl};
+    end
 end
 if (~isempty(geomsPropane))
-   for i = geomsPropane
-      load([dataDir,'/propaneDat.mat'], 'LL', 'HL');
-      ic = ic+1;
-      plotNumber(1,ic) = 804 + 10 * (doPlot-1);
-      for j = 1:size(LL,2)
-         LL1{ic,j} = LL{i,j};
-      end
-      HL1{ic,1} = HL{i,nhl};
-   end
+    for i = geomsPropane
+        load([dataDir,'/propaneDat.mat'], 'LL', 'HL');
+        ic = ic+1;
+        plotNumber(1,ic) = 804 + 10 * (doPlot-1);
+        for j = 1:size(LL,2)
+            LL1{ic,j} = LL{i,j};
+        end
+        HL1{ic,1} = HL{i,nhl};
+    end
 end
 if (~isempty(geomsPropene))
-   for i = geomsPropene
-      load([dataDir,'/propeneDat.mat'], 'LL', 'HL');
-      ic = ic+1;
-      plotNumber(1,ic) = 805 + 10 * (doPlot-1);
-      for j = 1:size(LL,2)
-         LL1{ic,j} = LL{i,j};
-      end
-      HL1{ic,1} = HL{i,nhl};
-   end
+    for i = geomsPropene
+        load([dataDir,'/propeneDat.mat'], 'LL', 'HL');
+        ic = ic+1;
+        plotNumber(1,ic) = 805 + 10 * (doPlot-1);
+        for j = 1:size(LL,2)
+            LL1{ic,j} = LL{i,j};
+        end
+        HL1{ic,1} = HL{i,nhl};
+    end
 end
 params = 1:ic;
 LL = LL1;
@@ -132,106 +134,118 @@ HL = HL1;
 %disp('building models');
 m = cell(1,size(params,2));
 for ipar = params
-   m{ipar} = Model3(LL{ipar,1},LL{ipar,2},LL{ipar,3});
+    m{ipar} = Model3(LL{ipar,1},LL{ipar,2},LL{ipar,3});
 end
 if (includeKEmods)
-   if (size(kestruct,1) == 0)
-      mixKEdiagH = Mixer([0 0],2,'KEdiagH');
-      mixKEdiagC = Mixer([0 0],2,'KEdiagC');
-      mixKEdiagCp = Mixer([0 0],2,'KEdiagCp');
-      mixKEbondHH = Mixer(0,1,'KEbondHH');
-      mixKEbondCH  = Mixer(0,1,'KEbondCH');
-      mixKEbondCHp  = Mixer(0,1,'KEbondCHp');
-      mixKEbondCC  = Mixer(0,1,'KEbondCC');
-      for ipar = params
-         m{ipar}.addKEmodDiag(1,1,mixKEdiagH);
-         m{ipar}.addKEmodDiag(6,1,mixKEdiagC);
-         m{ipar}.addKEmodDiag(6,2,mixKEdiagCp);
-         m{ipar}.addKEmodBonded(1,1,1,1,mixKEbondHH);
-         m{ipar}.addKEmodBonded(1,6,1,1,mixKEbondCH);
-         m{ipar}.addKEmodBonded(1,6,1,2,mixKEbondCHp);
-         m{ipar}.addKEmodBonded(6,6,[1 2],[1 2],mixKEbondCC);
-      end
-   else
-      for ipar = params
-         m{ipar}.addKEmodDiag(1,1,kestruct.H);
-         m{ipar}.addKEmodDiag(6,1,kestruct.Cs);
-         m{ipar}.addKEmodDiag(6,2,kestruct.Cp);
-         m{ipar}.addKEmodBonded(1,1,1,1,kestruct.HH);
-         m{ipar}.addKEmodBonded(1,6,1,1,kestruct.CsH);
-         m{ipar}.addKEmodBonded(1,6,1,2,kestruct.CpH);
-         m{ipar}.addKEmodBonded(6,6,1,1,kestruct.CsCs);
-         m{ipar}.addKEmodBonded(6,6,1,2,kestruct.CsCp);
-         m{ipar}.addKEmodBonded(6,6,2,2,kestruct.CpCp);
-      end
-   end
+    if (size(kestruct,1) == 0)
+        mixKEdiagH = Mixer([0 0],2,'KEdiagH');
+        mixKEdiagC = Mixer([0 0],2,'KEdiagC');
+        mixKEdiagCp = Mixer([0 0],2,'KEdiagCp');
+        mixKEbondHH = Mixer(0,1,'KEbondHH');
+        mixKEbondCH  = Mixer(0,1,'KEbondCH');
+        mixKEbondCHp  = Mixer(0,1,'KEbondCHp');
+        mixKEbondCC  = Mixer(0,1,'KEbondCC');
+        for ipar = params
+            m{ipar}.addKEmodDiag(1,1,mixKEdiagH);
+            m{ipar}.addKEmodDiag(6,1,mixKEdiagC);
+            m{ipar}.addKEmodDiag(6,2,mixKEdiagCp);
+            m{ipar}.addKEmodBonded(1,1,1,1,mixKEbondHH);
+            m{ipar}.addKEmodBonded(1,6,1,1,mixKEbondCH);
+            m{ipar}.addKEmodBonded(1,6,1,2,mixKEbondCHp);
+            m{ipar}.addKEmodBonded(6,6,[1 2],[1 2],mixKEbondCC);
+        end
+    else
+        for ipar = params
+            m{ipar}.addKEmodDiag(1,1,kestruct.H);
+            m{ipar}.addKEmodDiag(6,1,kestruct.Cs);
+            m{ipar}.addKEmodDiag(6,2,kestruct.Cp);
+            m{ipar}.addKEmodBonded(1,1,1,1,kestruct.HH);
+            m{ipar}.addKEmodBonded(1,6,1,1,kestruct.CsH);
+            m{ipar}.addKEmodBonded(1,6,1,2,kestruct.CpH);
+            m{ipar}.addKEmodBonded(6,6,1,1,kestruct.CsCs);
+            m{ipar}.addKEmodBonded(6,6,1,2,kestruct.CsCp);
+            m{ipar}.addKEmodBonded(6,6,2,2,kestruct.CpCp);
+        end
+    end
 end
 if (includeENmods)
-   if (isempty(enstruct) && isempty(enstruct1))
-      mixENdiagH = Mixer([0 0],2,'ENdiagH');
-      mixENdiagC = Mixer([0 0],2,'ENdiagC');
-      mixENdiagCp = Mixer([0 0],2,'ENdiagCp');
-      mixENbondHH = Mixer(0,1,'ENbondHH');
-      mixENbondCH  = Mixer(0,1,'ENbondCH');
-      mixENbondCHp  = Mixer(0,1,'ENbondCHp');
-      mixENbondCC  = Mixer(0,1,'ENbondCC');
-      for ipar = params
-         m{ipar}.addENmodDiag(1,1,mixENdiagH);
-         m{ipar}.addENmodDiag(6,1,mixENdiagC);
-         m{ipar}.addENmodDiag(6,2,mixENdiagCp);
-         m{ipar}.addENmodBonded(1,1,1,1,mixENbondHH);
-         m{ipar}.addENmodBonded(1,6,1,1,mixENbondCH);
-         m{ipar}.addENmodBonded(1,6,1,2,mixENbondCHp);
-         m{ipar}.addENmodBonded(6,6,[1 2],[1 2],mixENbondCC);
-      end
-   elseif (size(enstruct,1) == 1)
-      for ipar = params
-         m{ipar}.addENmodDiag(1,1,enstruct.H);
-         m{ipar}.addENmodDiag(6,1,enstruct.Cs);
-         m{ipar}.addENmodDiag(6,2,enstruct.Cp);
-         m{ipar}.addENmodBonded(1,1,1,1,enstruct.HH);
-         m{ipar}.addENmodBonded(1,6,1,1,enstruct.CsH);
-         m{ipar}.addENmodBonded(1,6,1,2,enstruct.CpH);
-         m{ipar}.addENmodBonded(6,6,1,1,enstruct.CsCs);
-         m{ipar}.addENmodBonded(6,6,1,2,enstruct.CsCp);
-         m{ipar}.addENmodBonded(6,6,2,2,enstruct.CpCp);
-      end
-   elseif (size(enstruct1,1) == 1)
-      for ipar = params
-         m{ipar}.addENmodDiag(1,1,enstruct1.H);  % tror det borde vara enstruct1
-         m{ipar}.addENmodDiag(6,1,enstruct1.Cs);
-         m{ipar}.addENmodDiag(6,2,enstruct1.Cp);
-         m{ipar}.addENmodBonded(1,1,1,1,enstruct1.HH);
-         m{ipar}.addENmodBonded1(6,1,1,1,enstruct1.CsH);
-         m{ipar}.addENmodBonded1(6,1,2,1,enstruct1.CpH);
-         m{ipar}.addENmodBonded1(1,6,1,1,enstruct1.HCs);
-         m{ipar}.addENmodBonded1(1,6,1,2,enstruct1.HCp);
-         m{ipar}.addENmodBonded(6,6,1,1,enstruct1.CsCs);
-         m{ipar}.addENmodBonded(6,6,1,2,enstruct1.CsCp);
-         m{ipar}.addENmodBonded(6,6,2,2,enstruct1.CpCp);
-      end
-   end
+    if (isempty(enstruct) && isempty(enstruct1))
+        mixENdiagH = Mixer([0 0],2,'ENdiagH');
+        mixENdiagC = Mixer([0 0],2,'ENdiagC');
+        mixENdiagCp = Mixer([0 0],2,'ENdiagCp');
+        mixENbondHH = Mixer(0,1,'ENbondHH');
+        mixENbondCH  = Mixer(0,1,'ENbondCH');
+        mixENbondCHp  = Mixer(0,1,'ENbondCHp');
+        mixENbondCC  = Mixer(0,1,'ENbondCC');
+        for ipar = params
+            m{ipar}.addENmodDiag(1,1,mixENdiagH);
+            m{ipar}.addENmodDiag(6,1,mixENdiagC);
+            m{ipar}.addENmodDiag(6,2,mixENdiagCp);
+            m{ipar}.addENmodBonded(1,1,1,1,mixENbondHH);
+            m{ipar}.addENmodBonded(1,6,1,1,mixENbondCH);
+            m{ipar}.addENmodBonded(1,6,1,2,mixENbondCHp);
+            m{ipar}.addENmodBonded(6,6,[1 2],[1 2],mixENbondCC);
+        end
+    elseif (size(enstruct,1) == 1)
+        for ipar = params
+            m{ipar}.addENmodDiag(1,1,enstruct.H);
+            m{ipar}.addENmodDiag(6,1,enstruct.Cs);
+            m{ipar}.addENmodDiag(6,2,enstruct.Cp);
+            m{ipar}.addENmodBonded(1,1,1,1,enstruct.HH);
+            m{ipar}.addENmodBonded(1,6,1,1,enstruct.CsH);
+            m{ipar}.addENmodBonded(1,6,1,2,enstruct.CpH);
+            m{ipar}.addENmodBonded(6,6,1,1,enstruct.CsCs);
+            m{ipar}.addENmodBonded(6,6,1,2,enstruct.CsCp);
+            m{ipar}.addENmodBonded(6,6,2,2,enstruct.CpCp);
+        end
+    elseif (size(enstruct1,1) == 1)
+        for ipar = params
+            m{ipar}.addENmodDiag(1,1,enstruct1.H);  % tror det borde vara enstruct1
+            m{ipar}.addENmodDiag(6,1,enstruct1.Cs);
+            m{ipar}.addENmodDiag(6,2,enstruct1.Cp);
+            m{ipar}.addENmodBonded(1,1,1,1,enstruct1.HH);
+            m{ipar}.addENmodBonded1(6,1,1,1,enstruct1.CsH);
+            m{ipar}.addENmodBonded1(6,1,2,1,enstruct1.CpH);
+            m{ipar}.addENmodBonded1(1,6,1,1,enstruct1.HCs);
+            m{ipar}.addENmodBonded1(1,6,1,2,enstruct1.HCp);
+            m{ipar}.addENmodBonded(6,6,1,1,enstruct1.CsCs);
+            m{ipar}.addENmodBonded(6,6,1,2,enstruct1.CsCp);
+            m{ipar}.addENmodBonded(6,6,2,2,enstruct1.CpCp);
+        end
+    end
+end
+if (~isempty(e2struct) > 0)
+    for ipar = params
+        m{ipar}.addH2modDiag(1,e2struct.H);
+        m{ipar}.addH2modDiag(6,e2struct.C);
+        m{ipar}.addH2modOffDiag(1,1,e2struct.HH);
+        m{ipar}.addH2modOffDiag(6,6,e2struct.CC);
+        m{ipar}.addH2modOffDiag(1,6,e2struct.CH);
+    end
 end
 if (useDeltaCharges)
-   for ipar = params
-      for ienv = 1:m{ipar}.nenv
-         m{ipar}.charges(:,ienv+1) = m{ipar}.charges(:,ienv+1) - m{ipar}.charges(:,1);
-      end
-      m{ipar}.charges(:,1) = m{ipar}.charges(:,1) - m{ipar}.charges(:,1);
-   end
+    for ipar = params
+        for ienv = 1:m{ipar}.nenv
+            m{ipar}.charges(:,ienv+1) = m{ipar}.charges(:,ienv+1) - m{ipar}.charges(:,1);
+        end
+        m{ipar}.charges(:,1) = m{ipar}.charges(:,1) - m{ipar}.charges(:,1);
+    end
 end
 
 fitme = Fitme;
 for ipar = params
-   fitme.addFrag(m{ipar},HL{ipar,1},plotNumber(ipar));
+    fitme.addFrag(m{ipar},HL{ipar,1},plotNumber(ipar));
 end
 fitme.includeKE = includeKEmods;
 fitme.includeEN = includeENmods * ones(1,6);
+if (~isempty(e2struct))
+    fitme.includeE2 = 1;
+end
 fitme.setEnvs(envs);
 if (doPlot > 0)
-   fitme.plot = 1;
+    fitme.plot = 1;
 else
-   fitme.plot = 0;
+    fitme.plot = 0;
 end
 fitme.testFitme = testFitme;
 
@@ -240,9 +254,9 @@ end
 function res = checkForInput(varargin,inputName,default)
 idx = find(cellfun(@(x)isequal(lower(x),lower(inputName)), varargin));
 if (~isempty(idx))
-   res = varargin{idx+1};
+    res = varargin{idx+1};
 else
-   res = default;
+    res = default;
 end
 end
 
