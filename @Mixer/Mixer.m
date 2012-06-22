@@ -58,9 +58,11 @@ classdef Mixer < handle
             res = ((1.0-x)/2.0) * v0 + ((1.0+x)/2.0) * (v0-v1);
          elseif (obj.funcType == 4)
             res = ((1.0-x)/2.0) * v0 + ((1.0+x)/2.0) * (v0-v2);
-         elseif (obj.funcType == 5)
-             res = x(1) * v0 + ((1.0-x(2))/2.0) *(v0-v1) ...
-                 + ((1.0+x(2))/2.0) * (v0-v2);
+         elseif (obj.funcType == 6)
+             res = x * v0 + ((1.0-obj.par(end))/2.0) *(v0-v1) ...
+                 + ((1.0+obj.par(end))/2.0) * (v0-v2);
+         elseif (obj.funcType == 7)
+             ((1.0-x)/2.0) * v0 + ((1.0+x)/2.0);
          end
       end
       function res = mix(obj, v0, v1, v2, model, ii, jj, ienv)
