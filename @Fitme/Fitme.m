@@ -119,6 +119,7 @@ classdef Fitme < handle
             for i=1:size(obj.mixers,2)
                 res = res + obj.mixers{i}.npar;
             end
+            
         end
         function res = getPars(obj)
             res = zeros(1,obj.npar);
@@ -151,68 +152,11 @@ classdef Fitme < handle
                     mtemp.setPars( par(ic:(ic+np-1)));
                 end
                 ic = ic + np;
-            end
-        end
-        function dpar = updateDensity(obj)
-            par = obj.getPars;
-            if ((size(obj.parHF,1) == 0) || ...
-                    (length(obj.parHF) ~= length(par) ) )
-                dpar = 1e10;
-            else
-                dpar = max(abs(obj.parHF-par));
-            end
-            if (dpar > obj.epsDensity)
-                if (~obj.parallel)
-                    disp(['solving for density matrices']);
-                    for imod = 1:obj.nmodels
-                        obj.models{imod}.solveHF(obj.envs{1,imod});
-                    end
-                else
-                    disp(['parallel solving for density matrices']);
-                    for imod = 1:obj.nmodels
-                        modFile1 = obj.models{imod};
-                        envsFile1 = obj.envs{1,imod};
-                        save(['scratch/todo',num2str(imod),'.mat'], ...
-                            'modFile1','envsFile1');
-                    end
-                    runModelsParallel('scratch/',obj.nmodels);
-                    for imod = 1:obj.nmodels
-                        modd = obj.models{imod};
-                        filename = ['scratch/done',num2str(imod),'.mat'];
-                        load(filename); % contains outFile
-                        if (sum(obj.envs{1,imod}==0))
-                            modd.orb = modFile2.orb;
-                            modd.Eorb = modFile2.Eorb;
-                            modd.Ehf = modFile2.Ehf;
-                        end
-                        modd.orbEnv      = modFile2.orbEnv;
-                        modd.EorbEnv     = modFile2.EorbEnv;
-                        modd.EhfEnv      = modFile2.EhfEnv;
-                        modd.densitySave = modFile2.densitySave;
-                        delete(filename);
-                    end
-                end
-                obj.parHF = par;
-            end
-        end
-        function res = ndata(obj)
-            ic = 0;
-            for imod = 1:obj.nmodels
-                if (obj.includeKE == 1)
-                    ic = ic + size(obj.HLKE{1,imod},2);
-                end
-                for iatom = 1:obj.models{imod}.natom
-                    if (obj.includeEN( obj.models{imod}.Z(iatom) ))
-                        ic = ic + size(obj.HLEN{imod}(iatom,:),2);
-                    end
-                end
-                if (obj.includeE2 == 1)
-                    ic = ic + size(obj.HLE2{1,imod},2);
-                end
+                
             end
             res = ic;
         end
-        function res = err(obj,par)
+        function [res plotnum etype] = err(obj,par)
             flip = 0; % to handle fit routines that pass row or column
             if (size(par,1)>size(par,2))
                 par = par';
@@ -234,6 +178,8 @@ classdef Fitme < handle
             ic = 1;
             ndat = obj.ndata;
             res = zeros(1,ndat);
+            plotnum = zeros(1,ndat);
+            etype = zeros(1,ndat);
             for imod = 1:obj.nmodels
                 if (obj.includeKE == 1)
                     hlevel = obj.HLKE{1,imod};
@@ -241,6 +187,8 @@ classdef Fitme < handle
                     t1 = hlevel - modpred;
                     n = size(t1,2);
                     res(1,ic:(ic+n-1))= t1;
+                    plotnum(1,ic:(ic+n-1))= obj.plotNumber(imod);
+                    etype(1,ic:(ic+n-1))= 1;
                     ic = ic + n;
                     if (doPlots)
                         figure(obj.plotNumber(imod));
@@ -269,6 +217,8 @@ classdef Fitme < handle
                         t1 = hlevel - modpred;
                         n = size(t1,2);
                         res(1,ic:(ic+n-1)) = t1;
+                        plotnum(1,ic:(ic+n-1))= obj.plotNumber(imod);
+                        etype(1,ic:(ic+n-1))= 10 + obj.models{imod}.Z(iatom);
                         ic = ic + n;
                         if (doPlots)
                             if (obj.models{imod}.Z(iatom) == 1)
@@ -305,6 +255,8 @@ classdef Fitme < handle
                     t1 = hlevel - modpred;
                     n = size(t1,2);
                     res(1,ic:(ic+n-1))= t1;
+                    plotnum(1,ic:(ic+n-1))= obj.plotNumber(imod);
+                    etype(1,ic:(ic+n-1))= 2;
                     ic = ic + n;
                     if (doPlots)
                         figure(obj.plotNumber(imod));
@@ -325,88 +277,263 @@ classdef Fitme < handle
                         %title('E2: HL(black) model(red)');
                         %xlabel('HL')
                     end
+                    >>>>>>> upstream/master
                 end
             end
-            disp(['RMS err/ndata = ',num2str(sqrt(res*res')/ndat), ...
-                ' kcal/mol err = ',num2str(sqrt(res*res'/ndat)*627.509)]);
-            
-            if (doPlots)
-                figure(obj.plotNumErr);
-                if (obj.errCalls == 0)
-                    hold off;
-                    title('log10(error) for test (red+) and train (blue o)');
+            function dpar = updateDensity(obj)
+                par = obj.getPars;
+                if ((size(obj.parHF,1) == 0) || ...
+                        (length(obj.parHF) ~= length(par) ) )
+                    dpar = 1e10;
                 else
-                    hold on;
+                    dpar = max(abs(obj.parHF-par));
                 end
-                obj.itcount = obj.itcount + 1;
-                plot(obj.errCalls+1, log10(norm(res)/length(res)),'bo');
-                obj.errTrain(obj.itcount) = norm(res);
-                if (size(obj.testFitme,1) > 0)
-                    disp('**** TEST SET START ****');
-                    err1 = obj.testFitme.err(par);
-                    disp('**** TEST SET END ****');
-                    hold on;
-                    plot(obj.errCalls+1, log10(norm(err1)/length(err1)),'r+');
-                    obj.errTest(obj.itcount) = norm(err1);
+                if (dpar > obj.epsDensity)
+                    if (~obj.parallel)
+                        disp(['solving for density matrices']);
+                        for imod = 1:obj.nmodels
+                            obj.models{imod}.solveHF(obj.envs{1,imod});
+                        end
+                    else
+                        disp(['parallel solving for density matrices']);
+                        for imod = 1:obj.nmodels
+                            modFile1 = obj.models{imod};
+                            envsFile1 = obj.envs{1,imod};
+                            save(['scratch/todo',num2str(imod),'.mat'], ...
+                                'modFile1','envsFile1');
+                        end
+                        runModelsParallel('scratch/',obj.nmodels);
+                        for imod = 1:obj.nmodels
+                            modd = obj.models{imod};
+                            filename = ['scratch/done',num2str(imod),'.mat'];
+                            load(filename); % contains outFile
+                            if (sum(obj.envs{1,imod}==0))
+                                modd.orb = modFile2.orb;
+                                modd.Eorb = modFile2.Eorb;
+                                modd.Ehf = modFile2.Ehf;
+                            end
+                            modd.orbEnv      = modFile2.orbEnv;
+                            modd.EorbEnv     = modFile2.EorbEnv;
+                            modd.EhfEnv      = modFile2.EhfEnv;
+                            modd.densitySave = modFile2.densitySave;
+                            delete(filename);
+                        end
+                    end
+                    obj.parHF = par;
                 end
             end
-            if (flip == 1)
-                res = res';
+            function res = ndata(obj)
+                ic = 0;
+                for imod = 1:obj.nmodels
+                    if (obj.includeKE == 1)
+                        ic = ic + size(obj.HLKE{1,imod},2);
+                    end
+                    for iatom = 1:obj.models{imod}.natom
+                        if (obj.includeEN( obj.models{imod}.Z(iatom) ))
+                            ic = ic + size(obj.HLEN{imod}(iatom,:),2);
+                        end
+                    end
+                    if (obj.includeE2 == 1)
+                        ic = ic + size(obj.HLE2{1,imod},2);
+                    end
+                end
+                res = ic;
             end
-            obj.errCalls = obj.errCalls + 1;
-        end
-        function generateArms(obj,narms,plow,phigh)
-            rr = rand(obj.npar,narms);
-            obj.arms = plow + (phigh-plow).*rr;
-        end
-        function res = pullArm(obj,iarm)
-            imod = randi(obj.nmodels);
-            ienv = randi(length(obj.envs{1,imod}));
-            obj.models{1,imod}.setPars( obj.arms(:,iarm) );
-            obj.models{1,imod}.solveHF(ienv);
-            res = (obj.models{1,imod}.EKE(ienv) - obj.HLKE{1,imod}(ienv)).^2;
-            for iatom = 1:obj.models{imod}.natom
-                res = res + ...
-                    (obj.HLEN{imod}(iatom,ienv) - ...
-                    obj.models{imod}.Een(iatom,ienv)).^2;
+            function res = err(obj,par)
+                flip = 0; % to handle fit routines that pass row or column
+                if (size(par,1)>size(par,2))
+                    par = par';
+                    flip = 1;
+                end
+                disp(['Fitme.err called with par = ',num2str(par)]);
+                obj.setPars(par);
+                dpar = obj.updateDensity();
+                
+                doPlots = obj.plot && (dpar > 1.0e-4);
+                
+                if (doPlots)
+                    for i=unique([obj.plotNumber])
+                        figure(i);
+                        clf;
+                    end
+                end
+                
+                ic = 1;
+                ndat = obj.ndata;
+                res = zeros(1,ndat);
+                for imod = 1:obj.nmodels
+                    if (obj.includeKE == 1)
+                        hlevel = obj.HLKE{1,imod};
+                        modpred = obj.models{imod}.EKE(obj.envs{1,imod});
+                        t1 = hlevel - modpred;
+                        n = size(t1,2);
+                        res(1,ic:(ic+n-1))= t1;
+                        ic = ic + n;
+                        if (doPlots)
+                            figure(obj.plotNumber(imod));
+                            subplot(4,2,1);
+                            hold on;
+                            llevel = obj.LLKE{1,imod};
+                            plot(llevel,llevel,'k.');
+                            plot(llevel,hlevel,'r.');
+                            plot(llevel,modpred,'b.');
+                            %title('Kinetic E: LL(black) HL(red) model(blue)');
+                            %xlabel('LL')
+                            subplot(4,2,2);
+                            hold on;
+                            x1 = min(hlevel);
+                            x2 = max(hlevel);
+                            plot(hlevel,modpred,'g.');
+                            plot([x1 x2],[x1 x2],'k-');
+                            %title('Kinetic E: HL(black) model(red)');
+                            %xlabel('HL')
+                        end
+                    end
+                    for iatom = 1:obj.models{imod}.natom
+                        if (obj.includeEN( obj.models{imod}.Z(iatom) ))
+                            hlevel = obj.HLEN{imod}(iatom,:);
+                            modpred = obj.models{imod}.Een(iatom,obj.envs{1,imod});
+                            t1 = hlevel - modpred;
+                            n = size(t1,2);
+                            res(1,ic:(ic+n-1)) = t1;
+                            ic = ic + n;
+                            if (doPlots)
+                                if (obj.models{imod}.Z(iatom) == 1)
+                                    frame1 = 3;
+                                    frame2 = 4;
+                                    element = 'H';
+                                else
+                                    frame1 = 5;
+                                    frame2 = 6;
+                                    element = 'C';
+                                end
+                                subplot(4,2,frame1);
+                                hold on;
+                                llevel = obj.LLEN{1,imod}(iatom,:);
+                                plot(llevel,llevel,'k.');
+                                plot(llevel,hlevel,'r.');
+                                plot(llevel,modpred,'b.');
+                                %title(['EN for ',element]);
+                                %xlabel('LL');
+                                subplot(4,2,frame2);
+                                hold on;
+                                x1 = min(hlevel);
+                                x2 = max(hlevel);
+                                plot(hlevel,modpred,'g.');
+                                plot([x1 x2],[x1 x2],'k-');
+                                %title(['EN for ',element]);
+                                %xlabel('HL');
+                            end
+                        end
+                    end
+                    if (obj.includeE2)
+                        hlevel = obj.HLE2{1,imod};
+                        modpred = obj.models{imod}.E2(obj.envs{1,imod});
+                        t1 = hlevel - modpred;
+                        n = size(t1,2);
+                        res(1,ic:(ic+n-1))= t1;
+                        ic = ic + n;
+                        if (doPlots)
+                            figure(obj.plotNumber(imod));
+                            subplot(4,2,7);
+                            hold on;
+                            llevel = obj.LLE2{1,imod};
+                            plot(llevel,llevel,'k.');
+                            plot(llevel,hlevel,'r.');
+                            plot(llevel,modpred,'b.');
+                            %title('E2: LL(black) HL(red) model(blue)');
+                            %xlabel('LL')
+                            subplot(4,2,8);
+                            hold on;
+                            x1 = min(hlevel);
+                            x2 = max(hlevel);
+                            plot(hlevel,modpred,'g.');
+                            plot([x1 x2],[x1 x2],'k-');
+                            %title('E2: HL(black) model(red)');
+                            %xlabel('HL')
+                        end
+                    end
+                end
+                disp(['RMS err/ndata = ',num2str(sqrt(res*res')/ndat), ...
+                    ' kcal/mol err = ',num2str(sqrt(res*res'/ndat)*627.509)]);
+                
+                if (doPlots)
+                    figure(obj.plotNumErr);
+                    if (obj.errCalls == 0)
+                        hold off;
+                        title('log10(error) for test (red+) and train (blue o)');
+                    else
+                        hold on;
+                    end
+                    obj.itcount = obj.itcount + 1;
+                    plot(obj.errCalls+1, log10(norm(res)/length(res)),'bo');
+                    obj.errTrain(obj.itcount) = norm(res);
+                    if (size(obj.testFitme,1) > 0)
+                        disp('**** TEST SET START ****');
+                        err1 = obj.testFitme.err(par);
+                        disp('**** TEST SET END ****');
+                        hold on;
+                        plot(obj.errCalls+1, log10(norm(err1)/length(err1)),'r+');
+                        obj.errTest(obj.itcount) = norm(err1);
+                    end
+                end
+                if (flip == 1)
+                    res = res';
+                end
+                obj.errCalls = obj.errCalls + 1;
             end
-            res = sqrt(res);
-        end
-        function res = randMolError(obj,par)
-            % selects a random molecule and environment
-            % calculates the error for the parameters in par
-            % returns a vector of errors to be minimized
-            imod = randi(obj.nmodels);
-            ienv = randi(length(obj.envs{1,imod}));
-            obj.models{1,imod}.setPars( par );
-            obj.models{1,imod}.solveHF(ienv);
-            res = obj.models{1,imod}.EKE(ienv) - obj.HLKE{1,imod}(ienv);
-            for iatom = 1:obj.models{imod}.natom
-                temp =  ...
-                    obj.HLEN{imod}(iatom,ienv) - ...
-                    obj.models{imod}.Een(iatom,ienv);
-                res = [res , temp];
+            function generateArms(obj,narms,plow,phigh)
+                rr = rand(obj.npar,narms);
+                obj.arms = plow + (phigh-plow).*rr;
             end
-            res = -1.0 * norm(res);
-        end
-        function res = armError(obj,iarm)
-            res = 0;
-            for imod = 1:obj.nmodels
+            function res = pullArm(obj,iarm)
+                imod = randi(obj.nmodels);
+                ienv = randi(length(obj.envs{1,imod}));
                 obj.models{1,imod}.setPars( obj.arms(:,iarm) );
-                envir =obj.envs{1,imod};
-                obj.models{1,imod}.solveHF(envir);
-                res = res + norm(obj.models{1,imod}.EKE(envir) - obj.HLKE{1,imod}).^2;
+                obj.models{1,imod}.solveHF(ienv);
+                res = (obj.models{1,imod}.EKE(ienv) - obj.HLKE{1,imod}(ienv)).^2;
                 for iatom = 1:obj.models{imod}.natom
                     res = res + ...
-                        norm(obj.HLEN{imod}(iatom,:) - ...
-                        obj.models{imod}.Een(iatom,envir)).^2;
+                        (obj.HLEN{imod}(iatom,ienv) - ...
+                        obj.models{imod}.Een(iatom,ienv)).^2;
                 end
+                res = sqrt(res);
             end
-            res = sqrt(res);
-        end
-        function res = normErr(obj,par)
-            err = obj.err(par);
-            res = norm(err);
+            function res = randMolError(obj,par)
+                % selects a random molecule and environment
+                % calculates the error for the parameters in par
+                % returns a vector of errors to be minimized
+                imod = randi(obj.nmodels);
+                ienv = randi(length(obj.envs{1,imod}));
+                obj.models{1,imod}.setPars( par );
+                obj.models{1,imod}.solveHF(ienv);
+                res = obj.models{1,imod}.EKE(ienv) - obj.HLKE{1,imod}(ienv);
+                for iatom = 1:obj.models{imod}.natom
+                    temp =  ...
+                        obj.HLEN{imod}(iatom,ienv) - ...
+                        obj.models{imod}.Een(iatom,ienv);
+                    res = [res , temp];
+                end
+                res = -1.0 * norm(res);
+            end
+            function res = armError(obj,iarm)
+                res = 0;
+                for imod = 1:obj.nmodels
+                    obj.models{1,imod}.setPars( obj.arms(:,iarm) );
+                    envir =obj.envs{1,imod};
+                    obj.models{1,imod}.solveHF(envir);
+                    res = res + norm(obj.models{1,imod}.EKE(envir) - obj.HLKE{1,imod}).^2;
+                    for iatom = 1:obj.models{imod}.natom
+                        res = res + ...
+                            norm(obj.HLEN{imod}(iatom,:) - ...
+                            obj.models{imod}.Een(iatom,envir)).^2;
+                    end
+                end
+                res = sqrt(res);
+            end
+            function res = normErr(obj,par)
+                err = obj.err(par);
+                res = norm(err);
+            end
         end
     end
-end
