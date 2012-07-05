@@ -55,8 +55,13 @@ classdef Model3 < handle
         function res = Model3(frag_,fnar_, fdif_)
             if (nargin ~= 0)
                 res.frag = frag_;
-                res.fnar = fnar_;
-                res.fdif = fdif_;
+                if (nargin == 1)
+                    res.fnar = frag_;
+                    res.fdif = frag_;
+                else
+                    res.fnar = fnar_;
+                    res.fdif = fdif_;
+                end
                 res.natom = frag_.natom;
                 res.nelec = frag_.nelec;
                 res.Z     = frag_.Z;
@@ -235,7 +240,7 @@ classdef Model3 < handle
                 end
             end
             if (mixerAdded)
-                obj.addMixer(mix);
+                obj.addMixer(mix); 
                 mixUsed = mix;
             else
                 mixUsed = [];
