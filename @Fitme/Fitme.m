@@ -215,7 +215,14 @@ classdef Fitme < handle
             end
             res = ic;
         end
-        function [res plotnum etype] = err(obj,par)
+        function [res plotnum etype] = err(obj,par,reslimit)
+            %Need to make an if statement to be able to determine if the
+            %input parameters are good or useless... the question is what
+            %determines if they are good or not at this point....
+            
+            if (nargin<3)
+                reslimit = 600;
+            end
             flip = 0; % to handle fit routines that pass row or column
             if (size(par,1)>size(par,2))
                 par = par';
@@ -246,6 +253,9 @@ classdef Fitme < handle
                     t1 = hlevel - modpred;
                     n = size(t1,2);
                     res(1,ic:(ic+n-1))= t1;
+                    if mean(t1) > reslimit
+                        error('Parameters are so bad that you can not solve the problem');
+                    end
                     plotnum(1,ic:(ic+n-1))= obj.plotNumber(imod);
                     etype(1,ic:(ic+n-1))= 1;
                     ic = ic + n;
@@ -276,6 +286,9 @@ classdef Fitme < handle
                         t1 = hlevel - modpred;
                         n = size(t1,2);
                         res(1,ic:(ic+n-1)) = t1;
+                        if mean(t1) > reslimit
+                            error('Parameters are so bad that you can not solve the problem');
+                        end
                         plotnum(1,ic:(ic+n-1))= obj.plotNumber(imod);
                         etype(1,ic:(ic+n-1))= 10 + obj.models{imod}.Z(iatom);
                         ic = ic + n;
@@ -318,6 +331,9 @@ classdef Fitme < handle
                     t1 = hlevel - modpred;
                     n = size(t1,2);
                     res(1,ic:(ic+n-1))= t1;
+                    if mean(t1) > reslimit
+                        error('Parameters are so bad that you can not solve the problem');
+                    end
                     plotnum(1,ic:(ic+n-1))= obj.plotNumber(imod);
                     etype(1,ic:(ic+n-1))= 2;
                     ic = ic + n;

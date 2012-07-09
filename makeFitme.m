@@ -146,7 +146,11 @@ HL = HL1;
 %disp('building models');
 m = cell(1,size(params,2));
 for ipar = params
-    m{ipar} = Model3(LL{ipar,1});
+    if (kestruct.H.funcType == 2 || kestruct.H.funcType == 3)
+        m{ipar} = Model3(LL{ipar,1});
+    else
+        m{ipar} = Model3(LL{ipar,1},LL{ipar,2},LL{ipar,3});
+    end
 end
 if (includeKEmods)
     if (size(kestruct,1) == 0)
@@ -191,7 +195,7 @@ if (includeKEmods)
             m{ipar}.addKEmodBonded(1,6,1,2,kestruct.CpH);
             m{ipar}.addKEmodBonded(6,6,1,1,kestruct.CsCs);
             m{ipar}.addKEmodBonded(6,6,1,2,kestruct.CsCp);
-            m{ipar}.addKEmodBonded(6,6,2,2,kestruct.CpCp);        
+            m{ipar}.addKEmodBonded(6,6,2,2,kestruct.CpCp);
             m{ipar}.addKEmodBonded(1,9,1,1,kestruct.FsH);
             m{ipar}.addKEmodBonded(1,9,1,2,kestruct.FpH);
             m{ipar}.addKEmodBonded(9,6,1,1,kestruct.CsFs);
@@ -257,7 +261,7 @@ if (includeENmods)
         end
     elseif (size(enstruct1,1) == 1)
         for ipar = params
-            m{ipar}.addENmodDiag(1,1,enstruct1.H); 
+            m{ipar}.addENmodDiag(1,1,enstruct1.H);
             m{ipar}.addENmodDiag(6,1,enstruct1.Cs);
             m{ipar}.addENmodDiag(6,2,enstruct1.Cp);
             m{ipar}.addKEmodDiag(9,1,enstruct1.Fs);
