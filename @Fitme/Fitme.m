@@ -1,63 +1,64 @@
 classdef Fitme < handle
-    properties
-        models  % {1,nmodels}  cell array of models
-        HLs     % {1,nmodels}  cell array to fit to
-        HLKE    % {1,nmodels}(1,nenv) KE energy
-        HLEN    % {1,nmodels}(natom,nenv) electron-nuclear interaction
-        HLE2    % {1,nmodels}(1,nenv) two-elec enerty
-        mixers  % {1,nmixer}   cell
-        
-        envs      % {1,nmodels} list of environments to include in fit
-        includeKE % include kinetic energy in fit
-        includeEN % {1,Z} include elec-nuc operators for element Z
-        includeE2 % include two-elec energy in fit
-        
-        parHF   % Last parameters for which HF was solved
-        epsDensity % re-evaluate density matrix if par change > eps
-        
-        plot       % Plot results on every call to err()
-        LLKE       % {1,nmodels}(1,nenv) used only for plots
-        LLEN       % {1,nmodels}(natom,nenv) used only for plots
-        LLE2       % {1,nmodels}(1,nenv) used for plots
-        plotNumber % (1,nmodels): number for plot of this model
-        plotNumErr % plot number for the error plots (default = 799)
-        errCalls   % number of calls to the err function
-        testFitme  % fitme object that has the test data
-        
-        itcount    % counter for the err arrays
-        errTrain   % error in train as a function of iteration
-        errTest    % error in test set
-        
-        arms       % (npar,narms): for bandit algorithm
-        parallel   % true to run updateDensity in parallel
-    end
-    methods
-        function res = Fitme
-            res.models = cell(0,0);
-            res.HLs    = cell(0,0);
-            res.HLKE   = cell(0,0);
-            res.HLEN   = cell(0,0);
-            res.epsDensity = 0.0;
-            res.includeKE = 1;
-            res.includeEN = zeros(1,9);
-            res.includeE2 = 0;
-            res.parHF = [];
-            res.plot = 1;
-            res.plotNumber = [];
-            res.plotNumErr = 799;
-            res.LLKE = cell(0,0);
-            res.LLEN = cell(0,0);
-            res.errCalls = 0;
-            res.itcount = 0;
-            res.parallel = 0;
-        end
-        function addMixer(obj, mix)
-            add = 1;
-            for i=1:size(obj.mixers,2)
-                if (mix == obj.mixers{1,i})
-                    add = 0;
-                    break;
-                end
+   properties
+      models  % {1,nmodels}  cell array of models
+      HLs     % {1,nmodels}  cell array to fit to
+      HLKE    % {1,nmodels}(1,nenv) KE energy
+      HLEN    % {1,nmodels}(natom,nenv) electron-nuclear interaction
+      HLE2    % {1,nmodels}(1,nenv) two-elec enerty
+      mixers  % {1,nmixer}   cell
+      
+      envs      % {1,nmodels} list of environments to include in fit
+      includeKE % include kinetic energy in fit
+      includeEN % {1,Z} include elec-nuc operators for element Z
+      includeE2 % include two-elec energy in fit
+      
+      parHF   % Last parameters for which HF was solved
+      epsDensity % re-evaluate density matrix if par change > eps
+      
+      plot       % Plot results on every call to err()
+      LLKE       % {1,nmodels}(1,nenv) used only for plots
+      LLEN       % {1,nmodels}(natom,nenv) used only for plots
+      LLE2       % {1,nmodels}(1,nenv) used for plots
+      plotNumber % (1,nmodels): number for plot of this model
+      plotNumErr % plot number for the error plots (default = 799)
+      errCalls   % number of calls to the err function
+      testFitme  % fitme object that has the test data
+      
+      itcount    % counter for the err arrays
+      errTrain   % error in train as a function of iteration
+      errTest    % error in test set
+      
+      arms       % (npar,narms): for bandit algorithm
+      parallel   % true to run updateDensity in parallel
+      restartFile % place to save intermediate results
+   end
+   methods
+      function res = Fitme
+         res.models = cell(0,0);
+         res.HLs    = cell(0,0);
+         res.HLKE   = cell(0,0);
+         res.HLEN   = cell(0,0);
+         res.epsDensity = 0.0;
+         res.includeKE = 1;
+         res.includeEN = zeros(1,6);
+         res.includeE2 = 0;
+         res.parHF = [];
+         res.plot = 1;
+         res.plotNumber = [];
+         res.plotNumErr = 799;
+         res.LLKE = cell(0,0);
+         res.LLEN = cell(0,0);
+         res.errCalls = 0;
+         res.itcount = 0;
+         res.parallel = 0;
+      end
+      function addMixer(obj, mix)
+         add = 1;
+         for i=1:size(obj.mixers,2)
+            if (mix == obj.mixers{1,i})
+               add = 0;
+               break;
+            end
             end
             if (add == 1)
                 obj.mixers{1,end+1} = mix;
@@ -118,8 +119,7 @@ classdef Fitme < handle
             res = 0;
             for i=1:size(obj.mixers,2)
                 res = res + obj.mixers{i}.npar;
-            end
-            
+            end  
         end
         function res = getPars(obj)
             res = zeros(1,obj.npar);
@@ -151,10 +151,8 @@ classdef Fitme < handle
                 if (np > 0)
                     mtemp.setPars( par(ic:(ic+np-1)));
                 end
-                ic = ic + np;
-                
+                ic = ic + np; 
             end
-            res = ic;
         end
         function dpar = updateDensity(obj)
             par = obj.getPars;
@@ -216,10 +214,6 @@ classdef Fitme < handle
             res = ic;
         end
         function [res plotnum etype] = err(obj,par,reslimit)
-            %Need to make an if statement to be able to determine if the
-            %input parameters are good or useless... the question is what
-            %determines if they are good or not at this point....
-            
             if (nargin<3)
                 reslimit = 1000;
             end
@@ -358,15 +352,86 @@ classdef Fitme < handle
                     end
                 end
             end
-        end
-        
-        function generateArms(obj,narms,plow,phigh)
-            rr = rand(obj.npar,narms);
-            obj.arms = plow + (phigh-plow).*rr;
-        end
-        function res = pullArm(obj,iarm)
-            imod = randi(obj.nmodels);
-            ienv = randi(length(obj.envs{1,imod}));
+       
+
+         disp(['RMS err/ndata = ',num2str(sqrt(res*res')/ndat), ...
+            ' kcal/mol err = ',num2str(sqrt(res*res'/ndat)*627.509)]);
+         obj.itcount = obj.itcount + 1;
+         obj.errTrain(obj.itcount) = norm(res);
+         if (size(obj.testFitme,1) > 0)
+            err1 = obj.testFitme.err(par);
+            obj.errTest(obj.itcount) = norm(err1);
+         end
+
+         if (doPlots)
+            figure(obj.plotNumErr);
+            if (obj.errCalls == 0)
+               hold off;
+               title('log10(error) for test (red+) and train (blue o)');
+            else
+                hold on
+            end
+        plot(obj.errCalls+1, log10(norm(res)/length(res)),'bo');
+            if (size(obj.testFitme,1) > 0)
+               hold on;
+               plot(obj.errCalls+1, log10(norm(err1)/length(err1)),'r+');
+            end
+         end
+         if (flip == 1)
+            res = res';
+         end
+         obj.errCalls = obj.errCalls + 1;
+         
+         if (dpar > 1.0e-4)
+            if (~isempty(obj.restartFile))
+               disp('saving restart file');
+               ptSave = par;
+               itSave = obj.itcount;
+               errTrainSave = obj.errTrain;
+               errTestSave = obj.errTest;
+               save(obj.restartFile,'ptSave','itSave', ...
+                  'errTrainSave','errTestSave');
+            end
+         end
+         
+      end
+      function generateArms(obj,narms,plow,phigh)
+         rr = rand(obj.npar,narms);
+         obj.arms = plow + (phigh-plow).*rr;
+      end
+      function res = pullArm(obj,iarm)
+         imod = randi(obj.nmodels);
+         ienv = randi(length(obj.envs{1,imod}));
+         obj.models{1,imod}.setPars( obj.arms(:,iarm) );
+         obj.models{1,imod}.solveHF(ienv);
+         res = (obj.models{1,imod}.EKE(ienv) - obj.HLKE{1,imod}(ienv)).^2;
+         for iatom = 1:obj.models{imod}.natom
+            res = res + ...
+               (obj.HLEN{imod}(iatom,ienv) - ...
+               obj.models{imod}.Een(iatom,ienv)).^2;
+         end
+         res = sqrt(res);
+      end
+      function res = randMolError(obj,par)
+         % selects a random molecule and environment
+         % calculates the error for the parameters in par
+         % returns a vector of errors to be minimized
+         imod = randi(obj.nmodels);
+         ienv = randi(length(obj.envs{1,imod}));
+         obj.models{1,imod}.setPars( par );
+         obj.models{1,imod}.solveHF(ienv);
+         res = obj.models{1,imod}.EKE(ienv) - obj.HLKE{1,imod}(ienv);
+         for iatom = 1:obj.models{imod}.natom
+            temp =  ...
+               obj.HLEN{imod}(iatom,ienv) - ...
+               obj.models{imod}.Een(iatom,ienv);
+            res = [res , temp];
+         end
+         res = -1.0 * norm(res);
+      end
+      function res = armError(obj,iarm)
+         res = 0;
+         for imod = 1:obj.nmodels
             obj.models{1,imod}.setPars( obj.arms(:,iarm) );
             obj.models{1,imod}.solveHF(ienv);
             res = (obj.models{1,imod}.EKE(ienv) - obj.HLKE{1,imod}(ienv)).^2;
@@ -376,39 +441,9 @@ classdef Fitme < handle
                     obj.models{imod}.Een(iatom,ienv)).^2;
             end
             res = sqrt(res);
-        end
-        function res = randMolError(obj,par)
-            % selects a random molecule and environment
-            % calculates the error for the parameters in par
-            % returns a vector of errors to be minimized
-            imod = randi(obj.nmodels);
-            ienv = randi(length(obj.envs{1,imod}));
-            obj.models{1,imod}.setPars( par );
-            obj.models{1,imod}.solveHF(ienv);
-            res = obj.models{1,imod}.EKE(ienv) - obj.HLKE{1,imod}(ienv);
-            for iatom = 1:obj.models{imod}.natom
-                temp =  ...
-                    obj.HLEN{imod}(iatom,ienv) - ...
-                    obj.models{imod}.Een(iatom,ienv);
-                res = [res , temp];
-            end
-            res = -1.0 * norm(res);
-        end
-        function res = armError(obj,iarm)
-            res = 0;
-            for imod = 1:obj.nmodels
-                obj.models{1,imod}.setPars( obj.arms(:,iarm) );
-                envir =obj.envs{1,imod};
-                obj.models{1,imod}.solveHF(envir);
-                res = res + norm(obj.models{1,imod}.EKE(envir) - obj.HLKE{1,imod}).^2;
-                for iatom = 1:obj.models{imod}.natom
-                    res = res + ...
-                        norm(obj.HLEN{imod}(iatom,:) - ...
-                        obj.models{imod}.Een(iatom,envir)).^2;
-                end
-            end
-            res = sqrt(res);
-        end
+         end
+      end
+        
         function res = normErr(obj,par)
             err = obj.err(par);
             res = norm(err);

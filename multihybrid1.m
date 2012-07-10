@@ -1,17 +1,18 @@
 %% Fitting multiple molecules, using makeFitme
-% clear classes;
-topDir = 'tmp4/';
-% if (Aprocess == 1)
-%    ics = [1 4 7];
-% elseif (Aprocess == 2)
-%    ics = [2 5];
-% else
-%    ics = [3 6];
-% end
+%clear classes;
+%topDir = 'T:\matdl\yaron\6-22-12\scaleconst\';
+topDir = 'scalehybrid/';
+if (Aprocess == 1)
+   ics = [1 6];
+elseif (Aprocess == 2)
+   ics = [2 7];
+else
+   ics = [3 9];
+end
 
 %trainC{1}  = {'h2',2:7,'envs',1:10};
 %testC{1} = {'h2',2:7,'envs',20:30};
-ftype = 1;
+ftype = 2;
 trainC{1}  = {'h2',[],'ch4',1:17,'envs',1:10};
 testC{1} = {'h2',[],'ch4',1:17,'envs',20:30};
 filePrefix{1} = 'ch4';
@@ -46,20 +47,11 @@ filePrefix{8} = 'c3h8';
 
 trainC{9}  = {'h2',[],'ch4',1:19,'ethane',1:7,'propane',1:7,'envs',1:10};
 testC{9} = {'h2',[],'ch4',1:19,'ethane',1:7,'propane',1:7,'envs',20:30};
-filePrefix{9} = 'ch4-c2h6-c3h8';
-
-trainC{10}  = {'h2',[],'ch3f',1:7,'envs',1:10};
-testC{10} = {'h2',[],'ch3f',1:7,'envs',20:30};
-filePrefix{10} = 'ch3f';
-
-trainC{11}  = {'h2',[],'ch3f',1:7,'ch4',1:19,'envs',1:10};
-testC{11} = {'h2',[],'ch3f',1:7,'ch4',1:19,'envs',20:30};
-filePrefix{11} = 'ch4-ch3f';
+filePrefix{9} = 'ch4f-c2h6-c3h8';
 
 commonIn = {};
-
-for iC = 11
-
+%
+for iC = ics% [1 2 3 4 6 7]
    trainIn = trainC{iC};
    testIn = testC{iC};
    filePre = filePrefix{iC};
@@ -73,66 +65,39 @@ for iC = 11
          ke.H = Mixer(iP,1,'ke.H',ftype);
          ke.Cs = Mixer(iP,1,'ke.C',ftype);
          ke.Cp = ke.Cs;
-         ke.Fs = Mixer(iP,1,'en.F',ftype);
-         ke.Fp = ke.Fs;
          ke.HH = Mixer(iP,1,'ke.HH',ftype);
-         ke.CsH = Mixer(iP,1,'ke.CH',ftype);
-         ke.CpH = ke.CsH;
-         ke.FsH = Mixer(iP,1,'ke.FH',ftype);
-         ke.FpH = ke.FsH;
-         ke.CsCs = Mixer(iP,1,'ke.CC',ftype);
-         ke.CsCp = ke.CsCs;
-         ke.CpCp = ke.CsCs;
-         ke.CsFs = Mixer(iP,1,'ke.CF',ftype);
-         ke.CpFs = ke.CsFs;
-         ke.CsFs = ke.CsFs;
-         ke.CpFp = ke.CsFs;
-         ke.FsFs = Mixer(iP,1,'ke.FF',ftype);
-         ke.FsFp = ke.FsFs;
-         ke.FpFp = ke.FsFs;
-        
+         ke.CH = Mixer(iP,1,'ke.CH',ftype);
+         ke.CH.hybrid = 1;
+         ke.CCs = Mixer(iP,1,'ke.CCs',ftype);
+         ke.CC.hybrid = 1;
+         ke.CCp = Mixer(iP,1,'ke.CCp',ftype);
+         ke.CCp.hybrid = 2;
+         
          en.H = Mixer(iP,1,'en.H',ftype);
          en.Cs = Mixer(iP,1,'en.C',ftype);
          en.Cp = en.Cs;
-         en.Fs = Mixer(iP,1,'en.F',ftype);
-         en.Fp = en.Fs;
          en.HH = Mixer(iP,1,'en.HH',ftype);
-         en.CsH = Mixer(iP,1,'en.CH',ftype);
-         en.CpH = en.CsH;
-         en.FsH = Mixer(iP,1,'en.FH',ftype);
-         en.FpH = en.FsH;
-         en.HCs = Mixer(iP,1,'en.HC',ftype);
-         en.HCp = en.HCs;
-         en.CsCs = Mixer(iP,1,'en.CC',ftype);
-         en.CsCp = en.CsCs;
-         en.CpCp = en.CsCs;
-         en.CsFs = Mixer(iP,1,'en.CF',ftype);
-         en.CpFs = en.CsFs;
-         en.CsFs = en.CsFs;
-         en.CpFp = en.CsFs;
-         en.FsFs = Mixer(iP,1,'en.FF',ftype);
-         en.FsFp = en.FsFs;
-         en.FpFp = en.FsFs;
+         en.CH = Mixer(iP,1,'en.CH',ftype);
+         en.CH.hybrid = 1;
+         en.HC = en.CH;
+         en.CCs = Mixer(iP,1,'en.CCs',ftype);
+         en.CCs.hybrid = 1;
+         en.CCp = Mixer(iP,1,'en.CCp',ftype);
+         en.CCp.hybrid = 2;
          
          e2.H = Mixer(iP,1,'e2.H',ftype);
          e2.C = Mixer(iP,1,'e2.C',ftype);
-         e2.F = Mixer(iP,1,'e2.F',ftype);
          e2.HH = Mixer(iP,1,'e2.HH',ftype);
          e2.CC = Mixer(iP,1,'e2.CC',ftype);
          e2.CH = Mixer(iP,1,'e2.CH',ftype);
-         e2.FH = Mixer(iP,1,'e2.FH',ftype);
-         e2.CF = Mixer(iP,1,'e2.CF',ftype);
-         e2.FF = Mixer(iP,1,'e2.FF',ftype);
-         
          %           ftest = makeFitme(testIn{:},commonIn{:},'enstruct1',en, ...
          %              'kestruct',ke,'e2struct',e2,'plot',2);
          %           ftest.parallel = 0;
          %           ftest.plot = 0;
-         f1 = makeFitmeF(trainIn{:},commonIn{:},'enstruct1',en,'kestruct',ke, ...
+         f1 = makeFitme(trainIn{:},commonIn{:},'enstructh',en,'kestructh',ke, ...
             'e2struct',e2);%,'testFitme',ftest);
          f1.plot = 0;
          f1.parallel = 0;
-
          %pst = [ -1.2840    1.4139   -0.9773   -0.1648    2.9684   -1.7791    5.7310   -9.6449    8.0355  12.5867   -0.1876   -0.1118    2.0048   -0.3105];
          %f1.setPars(pst);
          %          f1.parHF = zeros(size(f1.getPars));
@@ -151,49 +116,37 @@ for iC = 11
             m1.par(2) = 0;
             m1.fixed(2) = 0;
          end
-      elseif (iPar == 3) % add context sensitive (bond order)
-         for m1 = [ke.H ke.Cs en.Fs en.H en.Cs en.Fs]
+      elseif (iPar == 3) % add context sensitive
+         for m1 = [ke.H ke.Cs en.H en.Cs]
             m1.mixType = 2;
             m1.par(3) = m1.par(2);
             m1.fixed(3) = 0;
             m1.par(2) = 0;
          end
-         for m1 = [e2.H e2.C e2.F]
+         for m1 = [e2.H e2.C]
             m1.mixType = 2;
             m1.par(2) = 0;
             m1.fixed(2) = 0;
          end
-         for m1 = [ke.HH ke.CsH ke.CsCs ke.CsFs ke.FsFs ...
-                 en.HH en.HCs en.CsH en.CsCs en.CsFs en.FsFs...
-               e2.HH e2.CH e2.CC e2.CF e2.FF]
+         for m1 = [ke.HH ke.CH ke.CCs ke.CCp en.HH en.CH en.HC en.CCs ...
+               en.CCp] % e2.HH e2.CH e2.CC]
             m1.mixType = 3;
             m1.par(2) = 0;
             m1.fixed(2) = 0;
          end
       elseif (iPar == 4) % add context sensitive (bond length)
-         for m1 = [ke.HH ke.CsH ke.CsCs ke.CsFs ke.FsFs...
-                 en.HH en.HCs en.CsH en.CsCs en.CsFs en.FsFs]
+         for m1 = [ke.HH ke.CH ke.CCs ke.CCp en.HH en.CH en.HC en.CCs ...
+               en.CCp] % e2.HH e2.CH e2.CC]
             m1.mixType = 4;
             m1.par(2) = 0;
          end
-      elseif (iPar == 5) % add context sensitive (bond length)
-         for m1 = [ke.HH ke.CsH ke.CsCs ke.CsFs ke.FsFs...
-                 en.HH en.HCs en.CsH en.CsCs en.CsFs en.FsFs]
+      elseif (iPar == 5) % add context sensitive (both)
+         for m1 = [ke.HH ke.CH ke.CCs ke.CCp en.HH en.CH en.HC en.CCs ...
+               en.CCp] % e2.HH e2.CH e2.CC]
             m1.mixType = 5;
             m1.par(3) = m1.par(2);
             m1.par(2) = 0.0;
          end
-      elseif (iPar == 6)
-         ke.Cp = ke.Cs.deepCopy();     ke.Cs.desc ='ke.Cs';     ke.Cp.desc = 'ke.Cp';
-         ke.CpH = ke.CsH.deepCopy();   ke.CsH.desc ='ke.CsH';   ke.CpH.desc = 'ke.CpH';
-         ke.CsCp = ke.CsCs.deepCopy(); ke.CsCs.desc ='ke.CsCs'; ke.CsCp.desc = 'ke.CsCp';
-         ke.CpCp = ke.CsCs.deepCopy();                          ke.CpCp.desc = 'ke.CpCp';
-         
-         en.Cp = en.Cs.deepCopy();     en.Cs.desc ='en.Cs';     en.Cp.desc = 'en.Cp';
-         en.CpH = en.CsH.deepCopy();   en.CsH.desc ='en.CsH';   en.CpH.desc = 'en.CpH';
-         en.CpH = en.CsH.deepCopy();   en.CsH.desc ='en.CsH';   en.CpH.desc = 'en.CpH';
-         en.CsCp = en.CsCs.deepCopy(); en.CsCs.desc ='en.CsCs'; en.CsCp.desc = 'en.CsCp';
-         en.CpCp = en.CsCs.deepCopy();                          en.CpCp.desc = 'en.CpCp';
       end
       
       
@@ -205,7 +158,8 @@ for iC = 11
          disp([filePre,' iC ',num2str(iC),'fit# ',num2str(iPar),...
             'loaded from file']);
       else
-         options = optimset('DiffMinChange',1.0e-5,'TolFun',1.0e-3,'TolX',3.0e-3);
+         options = optimset('DiffMinChange',1.0e-5,'TolFun',1.0e-3, ...
+            'TolX',3.0e-3,'MaxFunEvals',500);
          if (exist(dataDir,'dir') ~= 7)
             status = mkdir(dataDir);
          end
@@ -246,7 +200,6 @@ for iC = 11
          else
             start = f1.getPars;
          end
-
          %f1.parallel = 0;
          %etest3 = f1.err(start);
          %f1.parallel = 1;
@@ -278,7 +231,6 @@ for iC = 11
                figure(813); saveas(gcf,[dataDir,'c2h4-test.fig']);
             end
          end
-
       end
    end
 end

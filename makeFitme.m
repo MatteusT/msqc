@@ -43,12 +43,16 @@ geomsEthane = checkForInput(varargin,'ethane',[]); % allowed range is 1:7
 geomsEthylene = checkForInput(varargin,'ethylene',[]); % allowed range is 1:7
 geomsPropane = checkForInput(varargin,'propane',[]); % allowed range is 1:7
 geomsPropene = checkForInput(varargin,'propene',[]); % allowed range is 1:9
+geomsCH3F = checkForInput(varargin,'ch3f',[]); % allowed range is 1:19
+geomsC2H5F = checkForInput(varargin,'c2h5f',[]); % allowed range is 1:9
 includeKEmods = checkForInput(varargin,'kemods',1);
 includeENmods = checkForInput(varargin,'enmods',1);
 useDeltaCharges = checkForInput(varargin,'deltarho',1);
 enstruct = checkForInput(varargin,'enstruct',[]);
 enstruct1 = checkForInput(varargin,'enstruct1',[]);
+enstructh = checkForInput(varargin,'enstructh',[]);
 kestruct = checkForInput(varargin,'kestruct',[]);
+kestructh = checkForInput(varargin,'kestructh',[]);
 e2struct = checkForInput(varargin,'e2struct',[]);
 testFitme = checkForInput(varargin,'testFitme',[]);
 
