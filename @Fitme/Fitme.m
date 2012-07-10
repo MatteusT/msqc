@@ -221,7 +221,7 @@ classdef Fitme < handle
             %determines if they are good or not at this point....
             
             if (nargin<3)
-                reslimit = 600;
+                reslimit = 1000;
             end
             flip = 0; % to handle fit routines that pass row or column
             if (size(par,1)>size(par,2))
