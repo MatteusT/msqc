@@ -56,8 +56,13 @@ classdef Model3 < handle
         function res = Model3(frag_,fnar_, fdif_)
             if (nargin ~= 0)
                 res.frag = frag_;
-                res.fnar = fnar_;
-                res.fdif = fdif_;
+                if (nargin == 1)
+                    res.fnar = frag_;
+                    res.fdif = frag_;
+                else
+                    res.fnar = fnar_;
+                    res.fdif = fdif_;
+                end
                 res.natom = frag_.natom;
                 res.nelec = frag_.nelec;
                 res.Z     = frag_.Z;
@@ -260,6 +265,13 @@ classdef Model3 < handle
                                             any(ismember(jtype,types2)) )
                                         addmods = 1;
                                     end
+                                end
+                                if (addmods)
+                                    mod.ilist = obj.valAtom{iatom,itype}';
+                                    mod.jlist = obj.valAtom{jatom,jtype}';
+                                    mod.mixer = mix;
+                                    obj.KEmods{1,end+1} = mod;
+                                    mixerAdded = 1;
                                 end
                             end
                         end
@@ -604,10 +616,22 @@ classdef Model3 < handle
                 j = mod.jlist;
                 k = mod.klist;
                 l = mod.llist;
+                si = length(i);
+                sj = length(j);
+                sk = length(k);
+                sl = length(l);
+                if (si + sj == 2 && sk + sl > si + sj) 
+                res(i,j,k,l) = reshape(res(i,j,k,l),[sk sl])...
+                    - reshape(obj.frag.H2(i,j,k,l),[sk sl]) ...
+                    + mod.mixer.mix(reshape(obj.frag.H2(i,j,k,l),[sk sl]), ...
+                    reshape(obj.fnar.H2(i,j,k,l),[sk sl]), ...
+                    reshape(obj.fdif.H2(i,j,k,l),[sk sl]), obj, i, j, ienv);
+                else
                 res(i,j,k,l) = res(i,j,k,l) - obj.frag.H2(i,j,k,l) ...
                     + mod.mixer.mix(obj.frag.H2(i,j,k,l), ...
                     obj.fnar.H2(i,j,k,l), ...
                     obj.fdif.H2(i,j,k,l), obj, i, j, ienv);
+                end
             end
         end
         function res = S(obj)

@@ -64,7 +64,7 @@ classdef Mixer < handle
          elseif (obj.funcType == 2)
             res = x * v0;
          elseif (obj.funcType == 3)
-            res = x * v0 + obj.par(end) * eye(size(v0));
+            res = x * v0 + obj.par(end) * eye(size(v0)); 
          elseif (obj.funcType == 4)
             res = ((1.0-x)/2.0) * v1 + ((1.0+x)/2.0) * v2 ...
                + obj.par(end) * eye(size(v0));

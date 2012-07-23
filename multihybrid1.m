@@ -2,13 +2,13 @@
 %clear classes;
 %topDir = 'T:\matdl\yaron\6-22-12\scaleconst\';
 topDir = 'scalehybrid/';
-if (Aprocess == 1)
-   ics = [1 6];
-elseif (Aprocess == 2)
-   ics = [2 7];
-else
-   ics = [3 9];
-end
+% if (Aprocess == 1)
+%    ics = [1 6];
+% elseif (Aprocess == 2)
+%    ics = [2 7];
+% else
+%    ics = [3 9];
+% end
 
 %trainC{1}  = {'h2',2:7,'envs',1:10};
 %testC{1} = {'h2',2:7,'envs',20:30};
@@ -47,11 +47,11 @@ filePrefix{8} = 'c3h8';
 
 trainC{9}  = {'h2',[],'ch4',1:19,'ethane',1:7,'propane',1:7,'envs',1:10};
 testC{9} = {'h2',[],'ch4',1:19,'ethane',1:7,'propane',1:7,'envs',20:30};
-filePrefix{9} = 'ch4f-c2h6-c3h8';
+filePrefix{9} = 'ch4-c2h6-c3h8';
 
 commonIn = {};
 %
-for iC = ics% [1 2 3 4 6 7]
+for iC = [1 2 3 4 5 6 7]
    trainIn = trainC{iC};
    testIn = testC{iC};
    filePre = filePrefix{iC};
@@ -63,8 +63,8 @@ for iC = ics% [1 2 3 4 6 7]
             iP = 0;
          end
          ke.H = Mixer(iP,1,'ke.H',ftype);
-         ke.Cs = Mixer(iP,1,'ke.C',ftype);
-         ke.Cp = ke.Cs;
+         ke.Cs = Mixer(iP,1,'ke.Cs',ftype);
+         ke.Cp = Mixer(iP,1,'ke.Cp',ftype);
          ke.HH = Mixer(iP,1,'ke.HH',ftype);
          ke.CH = Mixer(iP,1,'ke.CH',ftype);
          ke.CH.hybrid = 1;
@@ -74,8 +74,8 @@ for iC = ics% [1 2 3 4 6 7]
          ke.CCp.hybrid = 2;
          
          en.H = Mixer(iP,1,'en.H',ftype);
-         en.Cs = Mixer(iP,1,'en.C',ftype);
-         en.Cp = en.Cs;
+         en.Cs = Mixer(iP,1,'en.Cs',ftype);
+         en.Cp = Mixer(iP,1,'en.Cp',ftype);
          en.HH = Mixer(iP,1,'en.HH',ftype);
          en.CH = Mixer(iP,1,'en.CH',ftype);
          en.CH.hybrid = 1;
@@ -107,7 +107,7 @@ for iC = ics% [1 2 3 4 6 7]
          %          etest2 = f1.err(f1.getPars);
          %          input('hi');
       elseif (iPar == 2) % add constants
-         for m1 = [ke.H ke.Cs en.H en.Cs]
+         for m1 = [ke.H ke.Cs ke.Cp en.H en.Cs en.Cp]
             if (ftype == 2)
                m1.funcType = 3;
             else
@@ -117,7 +117,7 @@ for iC = ics% [1 2 3 4 6 7]
             m1.fixed(2) = 0;
          end
       elseif (iPar == 3) % add context sensitive
-         for m1 = [ke.H ke.Cs en.H en.Cs]
+         for m1 = [ke.H ke.Cs ke.Cp en.H en.Cs en.Cp]
             m1.mixType = 2;
             m1.par(3) = m1.par(2);
             m1.fixed(3) = 0;
