@@ -550,90 +550,80 @@ classdef Model3 < handle
                 res = obj.frag.HnucEnv(ienv);
             end
         end
-        function mixUsed = addH2modDiag(obj,Zs,mix)
-            if (nargin < 3)
-                mix = Mixer;
-                % create a mix object for these blocks
-                mix.desc = ['H2 Diag Zs [',num2str(Zs),']'];
+              function mixUsed = addH2modDiag(obj,Zs,mix)
+         if (nargin < 3)
+            mix = Mixer;
+            % create a mix object for these blocks
+            mix.desc = ['H2 Diag Zs [',num2str(Zs),']'];
+         end
+         mixerAdded = 0;
+         for iZ = Zs % loop over all desired elements
+            for iatom = find(obj.Z == iZ) % loop over atoms of this element
+               ilist = obj.onAtom{iatom}'; % orbitals on this atom
+               % Create a modifier for this block of the matrix
+               mod.ilist = ilist;
+               mod.jlist = ilist;
+               mod.klist = ilist;
+               mod.llist = ilist;
+               mod.mixer = mix;
+               obj.H2mods{1,end+1} = mod;
+               mixerAdded = 1;
             end
-            mixerAdded = 0;
-            for iZ = Zs % loop over all desired elements
-                for iatom = find(obj.Z == iZ) % loop over atoms of this element
-                    ilist = obj.onAtom{iatom}'; % orbitals on this atom
-                    % Create a modifier for this block of the matrix
-                    mod.ilist = ilist;
-                    mod.jlist = ilist;
-                    mod.klist = ilist;
-                    mod.llist = ilist;
-                    mod.mixer = mix;
-                    obj.H2mods{1,end+1} = mod;
-                    mixerAdded = 1;
-                end
+         end
+         if (mixerAdded)
+            obj.addMixer(mix);
+            mixUsed = mix;
+         else
+            mixUsed = [];
+         end
+      end
+      function mixUsed = addH2modOffDiag(obj,Z1,Z2, mix)
+         if (nargin < 4)
+            mix = Mixer();
+            mix.desc = ['KE bonded Z ',num2str(Z1),' with Z ', ...
+               num2str(Z2)];
+         end
+         mixerAdded = 0;
+         for iatom = 1:obj.natom
+            for jatom = 1:obj.natom
+               if (iatom ~= jatom)
+                  if ( ((obj.Z(iatom) == Z1) && (obj.Z(jatom) == Z2)) || ...
+                        ((obj.Z(iatom) == Z2) && (obj.Z(jatom) == Z1)) )
+                     mixerAdded = 1;
+                     mod.ilist = obj.onAtom{iatom}';
+                     mod.jlist = obj.onAtom{iatom}';
+                     mod.klist = obj.onAtom{jatom}';
+                     mod.llist = obj.onAtom{jatom}';
+                     mod.mixer = mix;
+                     obj.H2mods{1,end+1} = mod;
+                  end
+               end
             end
-            if (mixerAdded)
-                obj.addMixer(mix);
-                mixUsed = mix;
-            else
-                mixUsed = [];
-            end
-        end
-        function mixUsed = addH2modOffDiag(obj,Z1,Z2, mix)
-            if (nargin < 4)
-                mix = Mixer();
-                mix.desc = ['KE bonded Z ',num2str(Z1),' with Z ', ...
-                    num2str(Z2)];
-            end
-            mixerAdded = 0;
-            for iatom = 1:obj.natom
-                for jatom = 1:obj.natom
-                    if ( ((obj.Z(iatom) == Z1) && (obj.Z(jatom) == Z2)) || ...
-                            ((obj.Z(iatom) == Z2) && (obj.Z(jatom) == Z1)) )
-                        mixerAdded = 1;
-                        mod.ilist = obj.onAtom{iatom}';
-                        mod.jlist = obj.onAtom{iatom}';
-                        mod.klist = obj.onAtom{jatom}';
-                        mod.llist = obj.onAtom{jatom}';
-                        mod.mixer = mix;
-                        obj.H2mods{1,end+1} = mod;
-                    end
-                end
-            end
-            if (mixerAdded)
-                obj.addMixer(mix);
-                mixUsed = mix;
-            else
-                mixUsed = [];
-            end
-        end
-        function res = H2(obj,ienv)
-            if (nargin < 2)
-                ienv = 0;
-            end
-            res = obj.frag.H2;
-            for imod = 1:length(obj.H2mods)
-                mod = obj.H2mods{imod};
-                i = mod.ilist;
-                j = mod.jlist;
-                k = mod.klist;
-                l = mod.llist;
-                si = length(i);
-                sj = length(j);
-                sk = length(k);
-                sl = length(l);
-                if (si + sj == 2 && sk + sl > si + sj) 
-                res(i,j,k,l) = reshape(res(i,j,k,l),[sk sl])...
-                    - reshape(obj.frag.H2(i,j,k,l),[sk sl]) ...
-                    + mod.mixer.mix(reshape(obj.frag.H2(i,j,k,l),[sk sl]), ...
-                    reshape(obj.fnar.H2(i,j,k,l),[sk sl]), ...
-                    reshape(obj.fdif.H2(i,j,k,l),[sk sl]), obj, i, j, ienv);
-                else
-                res(i,j,k,l) = res(i,j,k,l) - obj.frag.H2(i,j,k,l) ...
-                    + mod.mixer.mix(obj.frag.H2(i,j,k,l), ...
-                    obj.fnar.H2(i,j,k,l), ...
-                    obj.fdif.H2(i,j,k,l), obj, i, j, ienv);
-                end
-            end
-        end
+         end
+         if (mixerAdded)
+            obj.addMixer(mix);
+            mixUsed = mix;
+         else
+            mixUsed = [];
+         end
+      end
+      function res = H2(obj,ienv)
+         if (nargin < 2)
+            ienv = 0;
+         end
+         res = obj.frag.H2;
+         for imod = 1:length(obj.H2mods)
+            mod = obj.H2mods{imod};
+            i = mod.ilist;
+            j = mod.jlist;
+            k = mod.klist;
+            l = mod.llist;
+            res(i,j,k,l) = res(i,j,k,l) - obj.frag.H2(i,j,k,l) ...
+               + mod.mixer.mix(obj.frag.H2(i,j,k,l), ...
+               obj.fnar.H2(i,j,k,l), ...
+               obj.fdif.H2(i,j,k,l), obj, i, j, ienv);
+         end
+      end
         function res = S(obj)
             res = obj.frag.S;
         end
@@ -645,6 +635,109 @@ classdef Model3 < handle
                 obj.bondOrders(:,:,ienv+1) = obj.calcBO(ienv);
             end
         end
-    end % methods
+      function res = dataForParallel(obj,scaleOnly)
+         % copy data needed for parallel HF to a non-handle object
+         % if scaleOnly = true, it only copies the frag data
+         % otherwise, copies frag fdif and fnar
+         fr.natom = obj.natom;
+         fr.nelec = obj.nelec;
+         fr.Z     = obj.Z;
+         fr.rcart = obj.rcart;
+         fr.nenv = obj.nenv;
+         fr.nbasis = obj.nbasis;
+         fr.basisAtom = obj.basisAtom;
+         fr.basisType = obj.basisType;
+         fr.basisSubType = obj.basisSubType;
+         fr.savedCharges  = obj.charges;
+         fr.savedBondOrders = obj.bondOrders;
+         fr.KE   = obj.frag.KE;
+         fr.H1en = obj.frag.H1en;
+         fr.H2   = obj.frag.H2;
+         fr.H1Env = obj.frag.H1Env;
+         res.frag = fr;
+         fn.KE   = obj.fnar.KE;
+         fn.H1en = obj.fnar.H1en;
+         fn.H2   = obj.fnar.H2;
+         fn.H1Env = obj.fnar.H1Env;
+         res.fnar = fn;
+         fd.KE   = obj.fdif.KE;
+         fd.H1en = obj.fdif.H1en;
+         fd.H2   = obj.fdif.H2;
+         fd.H1Env = obj.fdif.H1Env;
+         res.fdif = fd;
+         mixes = cell(1,length(obj.mixers));
+         for i = 1:length(obj.mixers)
+            obj.mixers{i}.index = i; % for use below
+            mixes{i} = obj.mixers{i}.constructionData;
+         end
+         res.mixers = mixes;
+         kemods = cell(1,length(obj.KEmods));
+         for i = 1:length(obj.KEmods)
+            t1 = [];
+            t1.ilist = obj.KEmods{i}.ilist;
+            t1.jlist = obj.KEmods{i}.jlist;
+            t1.mixNum = obj.KEmods{i}.mixer.index;
+            kemods{i} = t1;
+         end
+         res.KEmods = kemods;
+         enmods = cell(1,obj.natom);
+         for iatom = 1:obj.natom
+            t1 = cell(1,length(obj.ENmods{iatom}));
+            for i = 1:length(obj.ENmods{iatom})
+               t2 = [];
+               t2.ilist = obj.ENmods{iatom}{i}.ilist;
+               t2.jlist = obj.ENmods{iatom}{i}.jlist;
+               t2.mixNum = obj.ENmods{iatom}{i}.mixer.index;
+               t1{i} = t2;
+            end
+            enmods{iatom} = t1;
+         end
+         res.ENmods = enmods;
+         h2mods = cell(1,length(obj.H2mods));
+         for i = 1:length(obj.H2mods)
+            t1 = [];
+            t1.ilist = obj.H2mods{i}.ilist;
+            t1.jlist = obj.H2mods{i}.jlist;
+            t1.klist = obj.H2mods{i}.klist;
+            t1.llist = obj.H2mods{i}.llist;
+            t1.mixNum = obj.H2mods{i}.mixer.index;
+            h2mods{i} = t1;
+         end
+         res.H2mods = h2mods;
+      end
+   end % methods
+   methods (Static)
+      function res = createFromData(dat)
+         res = Model3(dat.frag,dat.fnar,dat.fdif);
+         res.mixers = cell(1,length(dat.mixers));
+         for i = 1:length(dat.mixers)
+            res.mixers{i} = Mixer.createFromData(dat.mixers{i});
+         end
+         res.KEmods = cell(1,length(dat.KEmods));
+         for i = 1:length(dat.KEmods)
+            res.KEmods{i}.ilist = dat.KEmods{i}.ilist;
+            res.KEmods{i}.jlist = dat.KEmods{i}.jlist;
+            res.KEmods{i}.mixer = res.mixers{dat.KEmods{i}.mixNum};
+         end
+         res.ENmods = cell(1,res.natom);
+         for iatom = 1:res.natom
+            t1 = cell(1,length(dat.ENmods{iatom}));
+            for i = 1:length(dat.ENmods{iatom})
+               t1{i}.ilist = dat.ENmods{iatom}{i}.ilist;
+               t1{i}.jlist = dat.ENmods{iatom}{i}.jlist;
+               t1{i}.mixer = res.mixers{dat.ENmods{iatom}{i}.mixNum};
+            end
+            res.ENmods{iatom} = t1;
+         end
+         res.H2mods = cell(1,length(dat.H2mods));
+         for i = 1:length(dat.H2mods)
+            res.H2mods{i}.ilist = dat.H2mods{i}.ilist;
+            res.H2mods{i}.jlist = dat.H2mods{i}.jlist;
+            res.H2mods{i}.klist = dat.H2mods{i}.klist;
+            res.H2mods{i}.llist = dat.H2mods{i}.llist;
+            res.H2mods{i}.mixer = res.mixers{dat.H2mods{i}.mixNum};
+         end         
+      end
+   end
 end %
 

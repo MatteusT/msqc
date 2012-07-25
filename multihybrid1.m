@@ -1,7 +1,8 @@
 %% Fitting multiple molecules, using makeFitme
 %clear classes;
-%topDir = 'T:\matdl\yaron\6-22-12\scaleconst\';
-topDir = 'scalehybrid/';
+topDir = 'C:\matdl\yaron\7-13-12\scalehybrid\parallel2\fixedE2\';
+%topDir = 'scalehybridparallel/';
+runParallel = 1;
 % if (Aprocess == 1)
 %    ics = [1 6];
 % elseif (Aprocess == 2)
@@ -9,7 +10,16 @@ topDir = 'scalehybrid/';
 % else
 %    ics = [3 9];
 % end
-
+ics = [1 2 3 6 7 9];
+%Aprocess = 1;
+%ics = [1 2 3 6 7];
+% if (Aprocess == 1)
+%    runParallel = 1;
+%    topDir = 'scalehybridparallel/fixedE2/';
+% else
+%    runParallel = 0;
+%    topDir = 'scalehybridparics/tight10/';
+% end
 %trainC{1}  = {'h2',2:7,'envs',1:10};
 %testC{1} = {'h2',2:7,'envs',20:30};
 ftype = 2;
@@ -47,14 +57,18 @@ filePrefix{8} = 'c3h8';
 
 trainC{9}  = {'h2',[],'ch4',1:19,'ethane',1:7,'propane',1:7,'envs',1:10};
 testC{9} = {'h2',[],'ch4',1:19,'ethane',1:7,'propane',1:7,'envs',20:30};
-filePrefix{9} = 'ch4-c2h6-c3h8';
+filePrefix{9} = 'ch4f-c2h6-c3h8';
 
 commonIn = {};
 %
-for iC = [1 2 3 4 5 6 7]
+for iC = ics% [1 2 3 4 6 7]
    trainIn = trainC{iC};
    testIn = testC{iC};
    filePre = filePrefix{iC};
+   ke = [];
+   en = [];
+   e2 = [];
+   f1 = [];
    for iPar = 1:5
       if (iPar == 1)
          if (ftype == 2)
@@ -62,9 +76,10 @@ for iC = [1 2 3 4 5 6 7]
          else
             iP = 0;
          end
+         
          ke.H = Mixer(iP,1,'ke.H',ftype);
-         ke.Cs = Mixer(iP,1,'ke.Cs',ftype);
-         ke.Cp = Mixer(iP,1,'ke.Cp',ftype);
+         ke.Cs = Mixer(iP,1,'ke.C',ftype);
+         ke.Cp = ke.Cs;
          ke.HH = Mixer(iP,1,'ke.HH',ftype);
          ke.CH = Mixer(iP,1,'ke.CH',ftype);
          ke.CH.hybrid = 1;
@@ -74,8 +89,8 @@ for iC = [1 2 3 4 5 6 7]
          ke.CCp.hybrid = 2;
          
          en.H = Mixer(iP,1,'en.H',ftype);
-         en.Cs = Mixer(iP,1,'en.Cs',ftype);
-         en.Cp = Mixer(iP,1,'en.Cp',ftype);
+         en.Cs = Mixer(iP,1,'en.C',ftype);
+         en.Cp = en.Cs;
          en.HH = Mixer(iP,1,'en.HH',ftype);
          en.CH = Mixer(iP,1,'en.CH',ftype);
          en.CH.hybrid = 1;
@@ -97,7 +112,7 @@ for iC = [1 2 3 4 5 6 7]
          f1 = makeFitme(trainIn{:},commonIn{:},'enstructh',en,'kestructh',ke, ...
             'e2struct',e2);%,'testFitme',ftest);
          f1.plot = 0;
-         f1.parallel = 0;
+         f1.parallel = runParallel;
          %pst = [ -1.2840    1.4139   -0.9773   -0.1648    2.9684   -1.7791    5.7310   -9.6449    8.0355  12.5867   -0.1876   -0.1118    2.0048   -0.3105];
          %f1.setPars(pst);
          %          f1.parHF = zeros(size(f1.getPars));
@@ -107,7 +122,7 @@ for iC = [1 2 3 4 5 6 7]
          %          etest2 = f1.err(f1.getPars);
          %          input('hi');
       elseif (iPar == 2) % add constants
-         for m1 = [ke.H ke.Cs ke.Cp en.H en.Cs en.Cp]
+         for m1 = [ke.H ke.Cs en.H en.Cs]
             if (ftype == 2)
                m1.funcType = 3;
             else
@@ -117,7 +132,7 @@ for iC = [1 2 3 4 5 6 7]
             m1.fixed(2) = 0;
          end
       elseif (iPar == 3) % add context sensitive
-         for m1 = [ke.H ke.Cs ke.Cp en.H en.Cs en.Cp]
+         for m1 = [ke.H ke.Cs en.H en.Cs]
             m1.mixType = 2;
             m1.par(3) = m1.par(2);
             m1.fixed(3) = 0;
