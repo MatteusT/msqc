@@ -1,6 +1,6 @@
 %%Load data
 clear classes;
-dataroot = 'c:/dave/apoly/msqc/dataz/ethylene1mp2';
+dataroot = 'C:\Users\Matteus\Research\ethylene1mp2';
 if (exist(dataroot,'dir'))
    rmdir(dataroot,'s');
 end
@@ -9,14 +9,14 @@ copyfile('templates/ethylene.tpl',[dataroot,'/ethylene.tpl']);
 copyfile('templates/ethylene-gen.tpl',[dataroot,'/ethylene-gen.tpl']);
 copyfile('ethane4mp2/env2.mat',[dataroot,'/env2.mat']);
 %%
-datasetroot = 'c:/dave/apoly/msqc/dataz/datasets';
+datasetroot = 'C:\Users\Matteus\Research\msqc\templates';
 % Generate environments for production runs
 if (exist([dataroot,'/env2.mat'],'file'))
    disp('loading existing environments');
    load([dataroot,'/env2.mat']);
 else
    mag = 15.0;
-   nenv = 100;
+   nenv = 40;
    cubSize = [6,6,6];
    cent = [0.77; 0; 0];
    for ienv = 1:nenv
