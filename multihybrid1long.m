@@ -1,7 +1,7 @@
 %% Fitting multiple molecules, using makeFitme
 %clear classes;
 %topDir = 'T:\matdl\yaron\6-22-12\scaleconst\';
-topDir = 'scalehybridbajs2/';
+topDir = 'scalehybridslow/';
 % if (Aprocess == 1)
 %    ics = [1 6];
 % elseif (Aprocess == 2)
@@ -51,11 +51,11 @@ filePrefix{9} = 'ch4-c2h6-c3h8';
 
 commonIn = {};
 %
-for iC = 1
+for iC = 1:9
     trainIn = trainC{iC};
     testIn = testC{iC};
     filePre = filePrefix{iC};
-    for iPar = 1
+    for iPar = 1:5
         if (iPar == 1)
             if (ftype == 2)
                 iP = 1;
@@ -66,32 +66,25 @@ for iC = 1
             ke.Cs = Mixer(iP,1,'ke.Cs',ftype);
             ke.Cp = Mixer(iP,1,'ke.Cp',ftype);
             ke.HH = Mixer(iP,1,'ke.HH',ftype);
-            ke.CsH = Mixer(iP,1,'ke.CsH',ftype);
-            ke.CpH = Mixer(iP,1,'ke.CpH',ftype);
-            ke.CsH.hybrid = 1;
-            ke.CpH.hybrid = 1;
-
+            ke.CH = Mixer(iP,1,'ke.CH',ftype);
+            ke.CCs = Mixer(iP,1,'ke.CCs',ftype);
+            ke.CCp = Mixer(iP,1,'ke.CCp',ftype);
+            ke.CCs.hybrid = 1;
+            ke.CCp.hybrid = 2;
+            
             
             en.H = Mixer(iP,1,'en.H',ftype);
             en.Cs = Mixer(iP,1,'en.Cs',ftype);
             en.Cp = Mixer(iP,1,'en.Cp',ftype);
             en.HH = Mixer(iP,1,'en.HH',ftype);
-            en.CsH = Mixer(iP,1,'en.CsH',ftype);
-            en.CpH = Mixer(iP,1,'en.CpH',ftype);
-            en.CsH.hybrid = 1;
-            en.CpH.hybrid = 1;
-            ke.CsCs = Mixer(iP,1,'ke.CsCs',ftype);
-            ke.CsCp = Mixer(iP,1,'ke.CsCp',ftype);
-            ke.CpCs = Mixer(iP,1,'ke.CpCs',ftype);
-            ke.CpCs.hybrid = 2;
-            ke.CpCp = Mixer(iP,1,'ke.CpCp',ftype);
-            ke.CpCp.hybrid = 2;
-            en.CsCs = Mixer(iP,1,'en.CsCs',ftype);
-            en.CsCp = Mixer(iP,1,'en.CsCp',ftype);
-            en.CpCs = Mixer(iP,1,'en.CpCs',ftype);
-            en.CpCs.hybrid = 2;
-            en.CpCp = Mixer(iP,1,'en.CpCp',ftype);
-            en.CpCp.hybrid = 2;
+            en.HC = Mixer(iP,1,'en.HC',ftype);
+            en.CH = Mixer(iP,1,'en.CH',ftype);
+            en.CH.hybrid = 1;
+            en.CCs = Mixer(iP,1,'en.CCs',ftype);
+            en.CCp = Mixer(iP,1,'en.CCp',ftype);
+            en.CCs.hybrid = 1;
+            en.CCp.hybrid = 2;
+            
             e2.CC = Mixer(iP,1,'e2.CC',ftype);
             e2.H = Mixer(iP,1,'e2.H',ftype);
             e2.C = Mixer(iP,1,'e2.C',ftype);
@@ -101,7 +94,7 @@ for iC = 1
             %              'kestruct',ke,'e2struct',e2,'plot',2);
             %           ftest.parallel = 0;
             %           ftest.plot = 0;
-            f1 = makeFitme(trainIn{:},commonIn{:},'enstruct',en,'kestruct',ke, ...
+            f1 = makeFitme(trainIn{:},commonIn{:},'enstructh',en,'kestructh',ke, ...
                 'e2struct',e2);%,'testFitme',ftest);
             f1.plot = 0;
             f1.parallel = 0;
@@ -115,17 +108,11 @@ for iC = 1
             %          input('hi');
         elseif (iPar == 2) % add constants
             % freeze all parameters at values from previous fit
-            if iC==1
-            for m1 = [ke.H ke.Cs ke.Cp en.H en.Cs en.Cp ke.HH ke.CsH ...
-                    ke.CpH en.HH en.CsH en.CpH en.HCs en.HCp e2.HH e2.CH ]
+            
+            for m1 = [ke.H ke.Cs ke.Cp en.H en.Cs en.Cp ke.HH ke.CH ...
+                    en.HH en.CH en.HC e2.HH e2.CH en.CCs en.CCp...
+                    ke.CCs ke.CCp e2.CC]
                 m1.fixed = ones(size(m1.fixed));
-            end
-            else
-                for m1 = [ke.H ke.Cs ke.Cp en.H en.Cs en.Cp ke.HH ke.CsH ...
-                        ke.CpH en.HH en.CsH en.CpH en.HCs en.HCp e2.HH...
-                        e2.CH en.CCs en.CCp ke.CCs ke.CCp e2.CC]
-                    m1.fixed = ones(size(m1.fixed));
-                end
             end
             % loop through some turning on context sensitive
             for m1 = [ke.H ke.Cs ke.Cp en.H en.Cs en.Cp]
@@ -146,52 +133,25 @@ for iC = 1
             % do a fit here
             % Now freeze off these and try doing the next set
         elseif (iPar == 4) % add context sensitiv
-            if iC ==1
-                for m1 = [ke.HH ke.CsH ke.CpH en.HH en.CsH en.CpH ...
-                        en.HCs en.HCp]
-                    m1.funcType = 3;
-                    m1.par(2) = 0;
-                    m1.fixed(1) = 0;
-                    m1.fixed(2) = 0; % needed because fixed array must expand
-                end
-            else
-                for m1 = [ke.HH ke.CsH ke.CpH en.HH en.CsH en.CpH...
-                        en.HCs en.HCp en.CCs ke.CCs ke.CCp en.CCp]
-                    m1.funcType = 3;
-                    m1.par(2) = 0;
-                    m1.fixed(1) = 0;
-                    m1.fixed(2) = 0; % needed because fixed array must expand
-                end
+            for m1 = [ke.HH ke.CH en.HH en.CH en.HC en.CCs ke.CCs...
+                    ke.CCp en.CCp]
+                m1.funcType = 3;
+                m1.par(2) = 0;
+                m1.fixed(1) = 0;
+                m1.fixed(2) = 0; % needed because fixed array must expand
             end
         elseif (iPar == 5)
-            if iC == 1
-                for m1 = [ke.HH ke.CsH ke.CpH en.HH en.CsH en.CpH ...
-                        en.HCs en.HCp]
-                    m1.funcType = 3;
-                    m1.fixed = ones(size(m1.fixed));
-                end
-            else
-                for m1 = [ke.HH ke.CsH ke.CpH ke.CCs ke.CCp en.HH ...
-                        en.CsH en.CpH en.HCs en.HCp en.CCs en.CCp]
-                    m1.funcType = 3;
-                    m1.fixed = ones(size(m1.fixed));
-                end
+            for m1 = [ke.HH ke.CH ke.CCs ke.CCp en.HH ...
+                    en.CH en.HC en.CCs en.CCp]
+                m1.funcType = 3;
+                m1.fixed = ones(size(m1.fixed));
             end
-        elseif (iPar == 6) 
-            if iC == 1
-                for m1 = [ e2.HH e2.CH]
-                    m1.funcType = 3;
-                    m1.par(2) = 0;
-                    m1.fixed(1) = 0;
-                    m1.fixed(2) = 0;
-                end
-            else
-                for m1 = [ e2.HH e2.CH e2.CC]
-                    m1.funcType = 3;
-                    m1.par(2) = 0;
-                    m1.fixed(1) = 0;
-                    m1.fixed(2) = 0;
-                end
+        elseif (iPar == 6)
+            for m1 = [ e2.HH e2.CH e2.CC]
+                m1.funcType = 3;
+                m1.par(2) = 0;
+                m1.fixed(1) = 0;
+                m1.fixed(2) = 0;
             end
         end
         

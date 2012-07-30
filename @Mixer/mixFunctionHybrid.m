@@ -34,7 +34,7 @@ Hmod = obj.mixFunctionNormal(x,Hhyb0,Hhyb1,Hhyb2);
 %     H     =  rot * Hhyb * rot'
 %     H     =  H - rot*hhyb*rot' + rot*Hmod*rot'
 
-res = v0 - trace(rot1 * Hhyb0 * rot2') + trace(rot1 * Hmod * rot2'); 
+res = v0 - rot1 * Hhyb0 * rot2'+ rot1 * Hmod * rot2'; 
 %put trace since otherwise the results dimensions will not agree with the
 %calculated
 

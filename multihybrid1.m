@@ -1,8 +1,8 @@
 %% Fitting multiple molecules, using makeFitme
 %clear classes;
-topDir = 'C:\matdl\yaron\7-13-12\scalehybrid\parallel2\fixedE2\';
+topDir = 'C:\Users\Matteus\Research\msqc\scalehybrid1\';
 %topDir = 'scalehybridparallel/';
-runParallel = 1;
+runParallel = 0;
 % if (Aprocess == 1)
 %    ics = [1 6];
 % elseif (Aprocess == 2)
@@ -84,7 +84,7 @@ for iC = ics% [1 2 3 4 6 7]
          ke.CH = Mixer(iP,1,'ke.CH',ftype);
          ke.CH.hybrid = 1;
          ke.CCs = Mixer(iP,1,'ke.CCs',ftype);
-         ke.CC.hybrid = 1;
+         ke.CCs.hybrid = 1;
          ke.CCp = Mixer(iP,1,'ke.CCp',ftype);
          ke.CCp.hybrid = 2;
          

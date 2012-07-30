@@ -88,7 +88,7 @@ if (~isempty(geomsH2))
     end
 end
 if (~isempty(geomsEthane))
-    load([dataDir,'/ethanerDat.mat']);
+    load([dataDir,'/ethanessDat.mat']);
     for i = geomsEthane
         ic = ic+1;
         plotNumber(1,ic) = 800 + 10 * (doPlot-1);
@@ -159,7 +159,7 @@ end
 lch3f = length(geomsCH3F);
 
 if (includeKEmods)
-    if (size(kestruct,1) == 0)
+    if (size(kestruct,1) == 0 && size(kestructh,1) == 0)
         mixKEdiagH = Mixer([0 0],2,'KEdiagH');
         mixKEbondHH = Mixer(0,1,'KEbondHH');
         mixKEdiagC = Mixer([0 0],2,'KEdiagC');
@@ -191,6 +191,16 @@ if (includeKEmods)
                 m{ipar}.addKEmodBonded(6,9,[1 2],[1 2],mixKEbondCF);
             end
         end
+    elseif (size(kestructh,1) == 1)
+    for ipar = params
+        m{ipar}.addKEmodDiag(1,1,kestructh.H);
+        m{ipar}.addKEmodDiag(6,1,kestructh.Cs);
+        m{ipar}.addKEmodDiag(6,2,kestructh.Cp);
+        m{ipar}.addKEmodBondedh(1,1,kestructh.HH);
+        m{ipar}.addKEmodBondedh(1,6,kestructh.CH);
+        m{ipar}.addKEmodBondedh(6,6,kestructh.CCs);
+        m{ipar}.addKEmodBondedh(6,6,kestructh.CCp);
+    end
     else
         for ipar = params
             m{ipar}.addKEmodDiag(1,1,kestruct.H);
@@ -214,16 +224,7 @@ if (includeKEmods)
             end
         end
     end
-elseif (size(kestructh,1) == 1)
-    for ipar = params
-        m{ipar}.addKEmodDiag(1,1,kestructh.H);
-        m{ipar}.addKEmodDiag(6,1,kestructh.Cs);
-        m{ipar}.addKEmodDiag(6,2,kestructh.Cp);
-        m{ipar}.addKEmodBondedh(1,1,kestructh.HH);
-        m{ipar}.addKEmodBondedh(1,6,kestructh.CH);
-        m{ipar}.addKEmodBondedh(6,6,kestructh.CCs);
-        m{ipar}.addKEmodBondedh(6,6,kestructh.CCp);
-    end
+
 end
 
 if (includeENmods)

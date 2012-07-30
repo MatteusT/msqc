@@ -206,6 +206,8 @@ classdef Fitme < handle
             disp(['Fitme.err called with par = ',num2str(par)]);
             obj.setPars(par);
             dpar = obj.updateDensity();
+
+            
             
             doPlots = obj.plot; %&& (dpar > 1.0e-4);
             
