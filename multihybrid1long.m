@@ -1,7 +1,7 @@
 %% Fitting multiple molecules, using makeFitme
 %clear classes;
 %topDir = 'T:\matdl\yaron\6-22-12\scaleconst\';
-topDir = 'scalehybridslow/';
+topDir = 'scalehybridENslow/';
 % if (Aprocess == 1)
 %    ics = [1 6];
 % elseif (Aprocess == 2)
@@ -51,11 +51,11 @@ filePrefix{9} = 'ch4-c2h6-c3h8';
 
 commonIn = {};
 %
-for iC = 1:9
+for iC = 1:7
     trainIn = trainC{iC};
     testIn = testC{iC};
     filePre = filePrefix{iC};
-    for iPar = 1:5
+    for iPar = 1:7
         if (iPar == 1)
             if (ftype == 2)
                 iP = 1;
@@ -67,10 +67,11 @@ for iC = 1:9
             ke.Cp = Mixer(iP,1,'ke.Cp',ftype);
             ke.HH = Mixer(iP,1,'ke.HH',ftype);
             ke.CH = Mixer(iP,1,'ke.CH',ftype);
+            %             ke.CH.hybrid = 1;
             ke.CCs = Mixer(iP,1,'ke.CCs',ftype);
             ke.CCp = Mixer(iP,1,'ke.CCp',ftype);
-            ke.CCs.hybrid = 1;
-            ke.CCp.hybrid = 2;
+            %             ke.CCs.hybrid = 1;
+            %             ke.CCp.hybrid = 2;
             
             
             en.H = Mixer(iP,1,'en.H',ftype);
@@ -146,7 +147,34 @@ for iC = 1:9
                 m1.funcType = 3;
                 m1.fixed = ones(size(m1.fixed));
             end
-        elseif (iPar == 6)
+            
+        elseif (iPar ==6)
+            for m1 = [ke.H ke.Cs ke.Cp en.H en.Cs en.Cp ke.HH ke.CH ...
+                    en.HH en.CH en.HC e2.HH e2.CH en.CCs en.CCp...
+                    ke.CCs ke.CCp e2.CC]
+                m1.fixed = ones(size(m1.fixed));
+            end
+            
+            for m1 = [ke.H ke.Cs ke.Cp en.H en.Cs en.Cp]
+                m1.mixType = 2;
+                m1.par(3) = m1.par(2);
+                m1.fixed(1) = 0;
+                m1.fixed(2) = 0;
+            end
+        elseif (iPar == 7)
+            for m1 = [ke.H ke.Cs ke.Cp en.H en.Cs en.Cp ke.HH ke.CH ...
+                    en.HH en.CH en.HC e2.HH e2.CH en.CCs en.CCp...
+                    ke.CCs ke.CCp e2.CC]
+                m1.fixed = ones(size(m1.fixed));
+            end
+            for m1 = [ke.HH ke.CH en.HH en.CH en.HC en.CCs ke.CCs...
+                    ke.CCp en.CCp]
+                m1.mixType = 3;
+                m1.par(3) = 0;
+                m1.fixed(1) = 0;
+                m1.fixed(2) = 0;
+            end
+        elseif (iPar == 8)
             for m1 = [ e2.HH e2.CH e2.CC]
                 m1.funcType = 3;
                 m1.par(2) = 0;
