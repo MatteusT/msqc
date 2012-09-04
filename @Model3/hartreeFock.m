@@ -106,10 +106,11 @@ while (~finished) %step 11 -- Test convergence
 
 G = zeros(Nbasis,Nbasis);
    for i=1:Nbasis
-      for j=1:Nbasis
+      for j=i:Nbasis
          t1 = sum(sum( P'.* H2j{i,j} ));
          t2 = sum(sum( P'.* H2k{i,j} ));
-         G(i,j) = G(i,j) + t1 - t2/2;
+         G(i,j) = t1 - t2/2;
+         G(j,i) = G(i,j);
       end
    end
     %step 6 -- Obtain F (fock matrix)
