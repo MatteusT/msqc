@@ -21,7 +21,7 @@ if (isempty(obj.atomContextXSaved))
       
       % bond lengths
       bonded = obj.isBonded(iatom,:);
-      [~,bondedAtoms] = find(bonded == 1);
+      [junk,bondedAtoms] = find(bonded == 1);
       bondLengths = zeros(length(bondedAtoms),1);
       ic = 0;
       for jatom = bondedAtoms

@@ -18,7 +18,7 @@ if (isempty(obj.bondContextXSaved))
    x = zeros(3,1);
    for iatom = 1:obj.natom
       bonded = obj.isBonded(iatom,:);
-      [~,bondedAtoms] = find(bonded == 1);
+      [junk,bondedAtoms] = find(bonded == 1);
       for jatom = bondedAtoms
          obj.atomContextNSaved{iatom,jatom} = {'r','bo','drho'};
          bondLength = norm(obj.rcart(:,iatom) - obj.rcart(:,jatom));
