@@ -1,7 +1,7 @@
 %function context1(iprocess)
 % Playing around with ways to ramp up context
-clear classes;
-close all;
+% clear classes;
+% close all;
 % choose representative environments
 % load('datasets/ch4Dat.mat');
 %
@@ -16,10 +16,10 @@ close all;
 % save('ch4keep.mat','ikeep');
 %
 iprocess = 2;
-topDir = 'C:/matdl/yaron/8-15-12/context/';
+topDir = 'C:/Users/Matteus/Research/msqc/Yaron/8-31-12/context/';
 %topDir = '/brashear/yaron/matdl/8-12-12/context-psc/';
 ftype = 3;
-runParallel = 1;
+runParallel = 0;
 showPlots = 1;
 
 ics = 1;
@@ -33,7 +33,7 @@ elseif (iprocess == 2)
    ikeep = [ 12    26    37    41    47    48    62    92    94];
    trainC{1} = {'ch4',1:3,'envs',ikeep};
    testC{1} = {'ch4',4:19,'envs',ikeep};
-   filePrefix{1} = 'ch4-23';
+   filePrefix{1} = 'ch4r';
 elseif (iprocess == 3)
    %   load('ch4keep.mat');
    ikeep = [ 12    26    37    41    47    48    62    92    94];
@@ -127,26 +127,25 @@ for imix = 1:length(f1.mixers)
       mix.fixed = [0 1];
    end
 end
-
 startName = [topDir,filePre,'/start.mat'];
 if (exist(startName,'file'))
    fprintf(1,'LOADING START \n');
    fprintf(summaryFile,'LOADING START \n');
-   load(startName,'f1','currentError','currentPar');
+   load(startName,'f1','currentErr','currentPar');
 else
-   [currentError,currentPar] = contextFit(f1,0,0);
+   [currentErr,currentPar] = contextFit(f1,0,0);
    save(startName);
 end
 
-disp(['starting error ', num2str(currentError)]);
-fprintf(summaryFile,'initial error %12.5f \n',currentError);
+disp(['starting error ', num2str(currentErr)]);
+fprintf(summaryFile,'initial error %12.5f \n',currentErr);
 ticID = tic;
-for iter = 1:30
+for iter = 1:28
    allName = [topDir,filePre,'/all-',num2str(iter),'.mat'];
    if (exist(allName,'file'))
       fprintf(1,'LOADING ITERATION %i \n',iter);
       fprintf(summaryFile,'LOADING ITERATION %i \n',iter);
-      load(allName,'f1','currentError','currentPar');
+      load(allName,'f1','currentErr','currentPar');
    else
       fprintf(1,'STARTING ITERATION %i \n',iter);
       fprintf(summaryFile,'STARTING ITERATION %i \n',iter);
