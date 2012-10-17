@@ -53,6 +53,7 @@ geomsC2H5F = checkForInput(varargin,'c2h5f',[]); % allowed range is 1:9
 includeKEmods = checkForInput(varargin,'kemods',1);
 includeENmods = checkForInput(varargin,'enmods',1);
 useDeltaCharges = checkForInput(varargin,'deltarho',1);
+addAllMixers = checkForInput(varargin,'allMixers',1);
 enstruct = checkForInput(varargin,'enstruct',[]);
 enstruct1 = checkForInput(varargin,'enstruct1',[]);
 enstructh = checkForInput(varargin,'enstructh',[]);
@@ -61,6 +62,7 @@ kestructh = checkForInput(varargin,'kestructh',[]);
 e2struct = checkForInput(varargin,'e2struct',[]);
 testFitme = checkForInput(varargin,'testFitme',[]);
 silent = checkForInput(varargin,'silent',0);
+separateSP = checkForInput(varargin,'separateSP',0);
 
 if (~isempty(enstruct) && ~isempty(enstruct1))
    error('Do not set both enstruct and enstruct1');
@@ -186,6 +188,7 @@ if (includeKEmods)
          m{ipar}.addKEmodBonded(1,6,1,1,mixKEbondCH);
          m{ipar}.addKEmodBonded(1,6,1,2,mixKEbondCHp);
          m{ipar}.addKEmodBonded(6,6,[1 2],[1 2],mixKEbondCC);
+
       end
    elseif (size(kestruct,1) == 1)
       for ipar = params
@@ -208,6 +211,7 @@ if (includeKEmods)
          m{ipar}.addKEmodBondedh(1,6,kestructh.CH);
          m{ipar}.addKEmodBondedh(6,6,kestructh.CCs);
          m{ipar}.addKEmodBondedh(6,6,kestructh.CCp);
+
       end
    end
 end
@@ -275,6 +279,45 @@ if (~isempty(e2struct) > 0)
       m{ipar}.addH2modOffDiag(1,1,e2struct.HH);
       m{ipar}.addH2modOffDiag(6,6,e2struct.CC);
       m{ipar}.addH2modOffDiag(1,6,e2struct.CH);
+   end
+end
+
+
+%% add all possible mixers
+
+if (addAllMixers)
+   % determine atom types in the train set
+   allTypes = [];
+   for ipar = params
+      allTypes = [allTypes,m{ipar}.aType];
+   end
+   atypes = unique(allTypes);
+   z = round(atypes/100);
+   % add all diagonal mixers
+   iP2 = [1 0 0 0];
+   iP3 = [1 0 0 0 0];
+   opers = {'ke ','en ','e2 '};
+   for oper = opers
+      for itype = 1:length(atypes)
+         atype = atypes(itype);
+         mixS = Mixer(iP3,11,' ',3);
+         if (~separateSP || (z(itype) == 1))
+            mixP = mixS;
+            mixS.desc = [oper,int2str(atype)];
+         else
+            mixP = Mixer(iP3,11,' ',3);
+            mixS.desc = [oper,int2str(atype),'  s'];
+            mixP.desc = [oper,int2str(atype),'  p'];
+         end
+         for ipar = params
+            if (strcmp(oper,'en '))
+               m{ipar}.addKEmodDiag(z(itype),1,mixS);
+               if (z(itype) > 1)
+                  m{ipar}.addKEmodDiag(z(itype),2,mixP);
+               end
+            end
+         end
+      end
    end
 end
 
