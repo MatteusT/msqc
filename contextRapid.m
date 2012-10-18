@@ -1,7 +1,7 @@
 %function context1(iprocess)
 % Playing around with ways to ramp up context
-clear classes;
-close all;
+% clear classes;
+% close all;
 % choose representative environments
 % load('datasets/ch4rDat.mat');
 % m1 = LL{1,1};
@@ -20,7 +20,7 @@ close all;
 % %save('ch4keep.mat','ikeep');
 %
 iprocess = 6;
-topDir = 'C:/Users/Matteus/Research/msqc/context-rapid/';
+topDir = 'C:/Users/mtanha/MSQC/msqc/context-rapid/';
 %topDir = '/brashear/yaron/matdl/9-2-12/context-psc-batchqueue/';
 ftype = 3;
 runParallel = 0;
@@ -65,7 +65,7 @@ elseif (iprocess == 6)
    ikeep = [6     7     8    13    16    24];
    trainC{1} = {'ch4',1:10,'ethaner',1:10,'envs',ikeep};
    ikeep2 = [5    10    14    17    20    25];
-   testC{1} = {'ch4',11:20,'ethaner',11:20,'envs',ikeep2};
+   testC{1} = {'ch4',11:19,'ethaner',11:20,'envs',ikeep2};
    filePrefix{1} = 'ch4-ethaner';
 elseif (iprocess == 7)
    %   load('ch4keep.mat');
