@@ -63,6 +63,7 @@ e2struct = checkForInput(varargin,'e2struct',[]);
 testFitme = checkForInput(varargin,'testFitme',[]);
 silent = checkForInput(varargin,'silent',0);
 separateSP = checkForInput(varargin,'separateSP',0);
+atomTyping = checkForInput(varargin,'atomTyping',0);
 
 if (~isempty(enstruct) && ~isempty(enstruct1))
    error('Do not set both enstruct and enstruct1');
@@ -171,6 +172,14 @@ m = cell(1,size(params,2));
 for ipar = params
    m{ipar} = Model3(LL{ipar,1},LL{ipar,2},LL{ipar,3});
 end
+if (atomTyping)
+    for ipar = params
+   m{ipar}.atomTyping;
+    end
+end
+
+    
+
 if (includeKEmods)
    if (isempty(kestruct) && isempty(kestructh))
       mixKEdiagH = Mixer([0 0],2,'KEdiagH');
@@ -292,7 +301,14 @@ if (addAllMixers)
       allTypes = [allTypes,m{ipar}.aType];
    end
    atypes = unique(allTypes);
-   z = round(atypes/100);
+   z = zeros(size(atypes));
+   for i = 1:length(atypes)
+       if atypes(i)>100
+       z(i) = round(atypes(i)/100);
+       else
+       z(i) = atypes(i);
+       end
+   end
    % add all diagonal mixers
    iP2 = [1 0 0 0];
    iP3 = [1 0 0 0 0];

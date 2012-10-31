@@ -20,7 +20,7 @@
 % %save('ch4keep.mat','ikeep');
 %
 iprocess = 6;
-topDir = 'C:/Users/mtanha/MSQC/msqc/context-rapid/';
+topDir = 'C:/Users/mtanha/MSQC/msqc/context-rapid-atype/';
 %topDir = '/brashear/yaron/matdl/9-2-12/context-psc-batchqueue/';
 ftype = 3;
 runParallel = 0;
@@ -63,7 +63,7 @@ elseif (iprocess == 5)
 elseif (iprocess == 6)
    %   load('ch4keep.mat');
    ikeep = [6     7     8    13    16    24];
-   trainC{1} = {'ch4',1:10,'ethaner',1:10,'envs',ikeep};
+   trainC{1} = {'ch4',1:9,'ethaner',1:10,'envs',ikeep};
    ikeep2 = [5    10    14    17    20    25];
    testC{1} = {'ch4',11:19,'ethaner',11:20,'envs',ikeep2};
    filePrefix{1} = 'ch4-ethaner';
@@ -145,10 +145,10 @@ e2.CH = Mixer(iP2,12,'e2.CH',2);
 % Create fitme object
 f1 = makeFitme(trainIn{:},commonIn{:},'enstructh',en, ...
    'kestructh',ke,'e2struct',e2);
-f1.parallel = 1;
+f1.parallel = 0;
 ftest = makeFitme(testIn{:},commonIn{:},'enstructh',en, ...
    'kestructh',ke,'e2struct',e2);
-ftest.parallel = 1;
+ftest.parallel =0;
 %f1 = makeFitme(trainIn{:},commonIn{:},'enmods',0, ...
 %   'kestructh',ke);
 
