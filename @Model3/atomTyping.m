@@ -2,7 +2,7 @@ function  atomTyping(obj)
 for iatom = 1:obj.natom
     if (obj.aType(iatom) == 6)
         bondedAtoms = find(obj.isBonded(iatom,1:obj.natom));
-        bAtom = obj.aType(bondedAtoms);
+        bAtom = obj.Z(bondedAtoms);
         if isempty(find(bAtom == 6))
             obj.aType(iatom) = 6;
         elseif length(find(bAtom == 6)) == 1
