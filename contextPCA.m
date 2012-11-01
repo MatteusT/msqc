@@ -1,10 +1,10 @@
-clear classes;
-close all;
-topDir = 'C:/matdl/yaron/10-26-12/contextPCA1sSP/';
-fitmeParallel = 1;
+% clear classes;
+% close all;
+topDir = 'C:\Users\mtanha\MSQC\msqc\contextPCA1sSPaType\';
+fitmeParallel = 0;
 psc = 0; % does not use optimization toolbox
 includeMethane = 1;
-includeEthane = 0;
+includeEthane = 1;
 includeAdhoc = 1;
 separateSP = 0;
 include1s = 0;
@@ -23,10 +23,8 @@ files = cell(0,0);
 fileprefix = '';
 
 if (includeMethane)
-   switch envType
-      
-   files{end+1} = ['datasets\ch4rDat',datasetExt,'.mat'];
-   fileprefix = [fileprefix 'ch4r',datasetExt];
+        files{end+1} = ['datasets\ch4rDat',datasetExt,'.mat'];
+        fileprefix = [fileprefix 'ch4r',datasetExt];
 end
 if (includeEthane)
    files{end+1} = 'datasets\ethanerDat.mat';
@@ -41,12 +39,14 @@ for i1 = 1:length(files)
    for i = train
       mtrain{end+1} = Model3(LL{i,1},LL{i,1},LL{i,1});
       mtrain{end}.solveHF;
+      mtrain{end}.atomTyping;
       HLtrain{end+1} = HL{i,1};
       envsTrain{1,end+1} = envs1;
    end
    for i = test
       mtest{end+1} = Model3(LL{i,1},LL{i,1},LL{i,2});
       mtest{end}.solveHF;
+      mtest{end}.atomTyping;
       HLtest{end+1} = HL{i,1};
       envsTest{end+1} = envs2;
    end
