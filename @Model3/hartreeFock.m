@@ -117,7 +117,7 @@ G = zeros(Nbasis,Nbasis);
     F = H1 + G;
     
     %step 7 -- Calculate the transformed F matrix
-    Ft = X'*F*X; %#ok<MINV>
+    Ft = X'*F*X; %%#ok<MINV>
     
     %step 8 -- Find e and the transformed expansion coefficient matrices
     [Ct1,e1] = eig(Ft);
