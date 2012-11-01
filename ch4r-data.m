@@ -2,35 +2,19 @@
 clear classes;
 reset(RandStream.getDefaultStream,sum(100*clock))
 
+%root = 'c:\dave\apoly\msqc\dataz';
+%dataroot = 'c:/dave/apoly/msqc/dataz/ch4r';
+root = 'c:\matdl\data';
+dataroot = 'c:\matdl\data\ch4r';
 
-root = 'C:/Users/Matteus/Research/msqc';
-% Generate environments for production runs
-% if (exist('ch4/env2.mat','file'))
-%    disp('loading existing environments');
-%    load('ch4/env2.mat');
-% else
-%    mag = 15.0;
-%    nenv = 100;
-%    cubSize = [6,6,6];
-%    cent = [0.77; 0; 0];
-%    for ienv = 1:nenv
-%       temp = Environment.newCube(cubSize,mag);
-%       temp.displace(cent);
-%       env{ienv} = temp;
-%    end
-%    save('ch4/env2.mat','env');
-
-% root = 'c:\dave\apoly\msqc\dataz';
-% dataroot = 'c:/dave/apoly/msqc/dataz/ch4r';
 if (~exist(dataroot,'dir'))
    mkdir(dataroot,'s');
    copyfile('templates/ch4.tpl',[dataroot,'/ch4.tpl']);
    copyfile('templates/ch4-gen.tpl',[dataroot,'/ch4-gen.tpl']);
-   copyfile('ethane4mp2/env2.mat',[dataroot,'/env2.mat']);
-
+   copyfile('datasets/env3.mat',[dataroot,'/env3.mat']);
 end
 
-load([dataroot,'/env2.mat']);
+load([dataroot,'/env3.mat']);
 nenv = 25;
 
 r1  = 1.12 - 0.15;
@@ -60,9 +44,9 @@ if (loadResults)
    end
 end
 maxpars = length(parsIn);
-maxpars = 25;
+maxpars = 35;
 %%
-if (exist('dataz/ch4r/ch4rDat.mat','file'))
+if (0) %(exist('dataz/ch4r/ch4rDat.mat','file'))
    disp('loading existing data');
    load('dataz/ch4r/ch4rDat.mat');
 else

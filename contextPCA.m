@@ -1,12 +1,18 @@
 clear classes;
 close all;
-topDir = 'C:/matdl/yaron/10-18-12/contextPCAh/';
-
+topDir = 'C:/matdl/yaron/10-26-12/contextPCA1sSP/';
 fitmeParallel = 1;
 psc = 0; % does not use optimization toolbox
 includeMethane = 1;
 includeEthane = 0;
 includeAdhoc = 1;
+separateSP = 0;
+include1s = 0;
+datasetExt = ''; %  '-orig'   :   8 charges, 
+                 %  ''        :   rand charge + dipoles,
+                 %  '-linrho' :   1 linear charge + dipoles,
+                 %  '-diponly' :   only dipoles
+
 mtrain = cell(0,0);
 HLtrain = cell(0,0);
 envsTrain = cell(0,0);
@@ -15,16 +21,19 @@ HLtest = cell(0,0);
 envsTest = cell(0,0);
 files = cell(0,0);
 fileprefix = '';
+
 if (includeMethane)
-   files{end+1} = 'datasets\ch4rDat.mat';
-   fileprefix = [fileprefix 'ch4r'];
+   switch envType
+      
+   files{end+1} = ['datasets\ch4rDat',datasetExt,'.mat'];
+   fileprefix = [fileprefix 'ch4r',datasetExt];
 end
 if (includeEthane)
    files{end+1} = 'datasets\ethanerDat.mat';
    fileprefix = [fileprefix 'ethaner'];
 end
 for i1 = 1:length(files)
-   load(files{i});
+   load(files{i1});
    train = 1:10;
    test = 11:20;
    envs1 = [6     7     8    13    16    24];
@@ -61,7 +70,7 @@ diary on;
 
 % Create fitme object
 [f1 ftest] = Context.makeFitme(mtrain,envsTrain,HLtrain, ...
-   mtest,envsTest,HLtest,includeAdhoc);
+   mtest,envsTest,HLtest,includeAdhoc,separateSP,include1s);
 f1.silent = 0;
 ftest.silent = 0;
 f1.parallel = fitmeParallel;
@@ -82,6 +91,9 @@ end
 str1 = 'initial error %12.5f test %12.5f \n';
 fprintf(1,str1,currentTrainErr,currentErr);
 fprintf(summaryFile,str1,currentTrainErr,currentErr);
+f1.printEDetails(summaryFile);
+ftest.printEDetails(summaryFile);
+
 ticID = tic;
 for iter = 1:12
    allName = [topDir,filePre,'/all-',num2str(iter),'.mat'];
@@ -102,15 +114,17 @@ for iter = 1:12
             end
          end
       end
-      if (iter >2)
+      % if ((iter == 3) || (iter == 12))
       [currentTrainErr,currentPar,currentErr] = contextFit2(f1,ftest,0,0,0,500,psc);
       save(allName);
-      end
-      str2 = 'context error %12.5f test %12.5f \n';
-      fprintf(1,str2,currentTrainErr,currentErr);
-      fprintf(summaryFile,str2,currentTrainErr,currentErr);
-
+      %end
    end
+   str2 = 'context error %12.5f test %12.5f \n';
+   fprintf(1,str2,currentTrainErr,currentErr);
+   fprintf(summaryFile,str2,currentTrainErr,currentErr);
+   f1.printEDetails(summaryFile);
+   ftest.printEDetails(summaryFile);
+
 end
 runTime = toc(ticID)
 diary off;
