@@ -205,7 +205,7 @@ classdef Model3 < handle
          end
          mixerAdded = 0;
          for iZ = Zs % loop over all desired elements
-            for iatom = find(obj.Z == iZ) % loop over atoms of this element
+            for iatom = find(obj.aType == iZ) % loop over atoms of this element
                ilist = []; % orbitals of "types" on this atom
                for itype = types
                   ilist = [ilist obj.valAtom{iatom,itype}'];
@@ -234,7 +234,7 @@ classdef Model3 < handle
          end
          mixerAdded = 0;
          for iZ = Zs % loop over all desired elements
-            for iatom = find(obj.Z == iZ) % loop over atoms of this element
+            for iatom = find(obj.aType == iZ) % loop over atoms of this element
                if (length(obj.onAtom{iatom}) ~= 5)
                   error('Model3:addKEcore not called on atom with 5 basis functions');
                end
@@ -289,13 +289,13 @@ classdef Model3 < handle
                   for itype = 1:2
                      for jtype = 1:2
                         addmods = 0;
-                        if ((obj.Z(iatom) == Z1) && (obj.Z(jatom) == Z2))
+                        if ((obj.aType(iatom) == Z1) && (obj.aType(jatom) == Z2))
                            if (any(ismember(itype,types1)) && ...
                                  any(ismember(jtype,types2)) )
                               addmods = 1;
                            end
                         end
-                        if ((obj.Z(iatom) == Z2) && (obj.Z(jatom) == Z1))
+                        if ((obj.aType(iatom) == Z2) && (obj.aType(jatom) == Z1))
                             if (any(ismember(itype,types2)) && ...
                                  any(ismember(jtype,types1)) )
                               addmods = 1;
@@ -366,10 +366,10 @@ classdef Model3 < handle
                end
                if (bondExists)
                   addmods = 0;
-                  if ((obj.Z(iatom) == Z1) && (obj.Z(jatom) == Z2))
+                  if ((obj.aType(iatom) == Z1) && (obj.aType(jatom) == Z2))
                      addmods = 1;
                   end
-                  if ((obj.Z(iatom) == Z2) && (obj.Z(jatom) == Z1))
+                  if ((obj.aType(iatom) == Z2) && (obj.aType(jatom) == Z1))
                      addmods = 1;
                   end
                   if (addmods)
@@ -438,7 +438,7 @@ classdef Model3 < handle
          mixerAdded = 0;
          % create a mix object that will be the same for all these blocks
          for iZ = Zs % loop over all desired elements
-            for iatom = find(obj.Z == iZ) % loop over atoms of this element
+            for iatom = find(obj.aType == iZ) % loop over atoms of this element
                ilist = []; % orbitals of "types" on this atom
                for itype = types
                   ilist = [ilist obj.valAtom{iatom,itype}'];
@@ -486,13 +486,13 @@ classdef Model3 < handle
                      for itype = 1:2
                         for jtype = 1:2
                            addmods = 0;
-                           if ((obj.Z(iatom) == Z1) && (obj.Z(jatom) == Z2))
+                           if ((obj.aType(iatom) == Z1) && (obj.aType(jatom) == Z2))
                               if (any(ismember(itype,types1)) && ...
                                     any(ismember(jtype,types2)) )
                                  addmods = 1;
                               end
                            end
-                           if ((obj.Z(iatom) == Z2) && (obj.Z(jatom) == Z1))
+                           if ((obj.aType(iatom) == Z2) && (obj.aType(jatom) == Z1))
                               if (any(ismember(itype,types2)) && ...
                                     any(ismember(jtype,types1)) )
                                  addmods = 1;
@@ -533,8 +533,8 @@ classdef Model3 < handle
                num2str(types2),']'];
          end
          mixerAdded = 0;
-         for iatom = find(obj.Z == Z1)
-            for jatom = find(obj.Z == Z2)
+         for iatom = find(obj.aType == Z1)
+            for jatom = find(obj.aType == Z2)
                bondExists = obj.isBonded(iatom,jatom);
                if ((mix.hybrid == 2) && bondExists)
                   % check for pi bond
@@ -570,8 +570,8 @@ classdef Model3 < handle
       end
       function mixUsed = addENmodBonded1h(obj,Z1,Z2,mix)
          mixerAdded = 0;
-         for iatom = find(obj.Z == Z1)
-            for jatom = find(obj.Z == Z2)
+         for iatom = find(obj.aType == Z1)
+            for jatom = find(obj.aType == Z2)
                bondExists = obj.isBonded(iatom,jatom);
                if ((mix.hybrid == 2) && bondExists)
                   % check for pi bond
@@ -617,7 +617,7 @@ classdef Model3 < handle
          end
          mixerAdded = 0;
          for iZ = Zs % loop over all desired elements
-            for iatom = find(obj.Z == iZ) % loop over atoms of this element
+            for iatom = find(obj.aType == iZ) % loop over atoms of this element
                ilist = obj.onAtom{iatom}'; % orbitals on this atom
                % Create a modifier for this block of the matrix
                mod.ilist = ilist;
@@ -646,8 +646,8 @@ classdef Model3 < handle
          for iatom = 1:obj.natom
             for jatom = 1:obj.natom
                if (iatom ~= jatom)
-                  if ( ((obj.Z(iatom) == Z1) && (obj.Z(jatom) == Z2)) || ...
-                        ((obj.Z(iatom) == Z2) && (obj.Z(jatom) == Z1)) )
+                  if ( ((obj.aType(iatom) == Z1) && (obj.aType(jatom) == Z2)) || ...
+                        ((obj.aType(iatom) == Z2) && (obj.aType(jatom) == Z1)) )
                      mixerAdded = 1;
                      mod.ilist = obj.onAtom{iatom}';
                      mod.jlist = obj.onAtom{iatom}';
