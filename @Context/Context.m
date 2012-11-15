@@ -60,6 +60,7 @@ classdef Context < handle
                     case 12 % CC
                         obj.ndim = 7 * 3;
                 end
+
             end
             obj.data = zeros(ndataIn,obj.ndim);
             obj.idata = 0;

@@ -101,6 +101,7 @@ for type1 = 1:length(atypes)
                         end
                     end
                 end
+
             end
         end
         
@@ -130,6 +131,7 @@ for imod = 1:ntrain
                     sc1 = c1.score(ic,:)';
                     bondDiff(ic) = max(abs(proj - sc1));
                 end
+
             end
         end
     end
@@ -139,27 +141,47 @@ end
 allMods = {mtrain{:},mtest{:}};
 allEnvs = {envsTrain{:},envsTest{:}};
 if (includeAdhoc)
-    % get Model3 to fill in the ad hoc contexts, and then same them
-    atomAdhoc = cell(length(allMods),1);
-    bondAdhoc = cell(length(allMods),1);
-    for imod = 1:length(allMods)
-        mod = allMods{imod};
-        mod.atomContext(1,1); % will fill in all atom contexts
-        mod.bondContext(1,2,1); % will fill in all bond contexts
-        atomAdhoc{imod} = mod.atomContextXSaved;
-        bondAdhoc{imod} = mod.bondContextXSaved;
-    end
+   % get Model3 to fill in the ad hoc contexts, and then same them
+   atomAdhoc = cell(length(allMods),1);
+   bondAdhoc = cell(length(allMods),1);
+   for imod = 1:length(allMods)
+      mod = allMods{imod};
+      mod.atomContextXSaved = []; % delete any stored contexts
+      mod.bondContextXSaved = [];
+      mod.atomContext(1,1); % will fill in all atom contexts
+      mod.bondContext(1,2,1); % will fill in all bond contexts
+      atomAdhoc{imod} = mod.atomContextXSaved;
+      bondAdhoc{imod} = mod.bondContextXSaved;
+   end
 end
 
 for imod = 1:length(allMods)
-    mod = allMods{imod};
-    envs = allEnvs{imod};
-    mod.atomContextXSaved = cell(mod.natom,mod.nenv + 1);
-    for iatom = 1:mod.natom
-        itype = find(atypes == mod.aType(iatom));
-        c1 = atomContexts{itype};
-        for ienv = allEnvs{imod}
-            pcaContext = c1.project(mod,ienv,iatom);
+   mod = allMods{imod};
+   envs = allEnvs{imod};
+   mod.atomContextXSaved = cell(mod.natom,mod.nenv + 1);
+   for iatom = 1:mod.natom
+      itype = find(atypes == mod.aType(iatom));
+      c1 = atomContexts{itype};
+      for ienv = 0:mod.nenv % allEnvs{imod}
+         pcaContext = c1.project(mod,ienv,iatom);
+         if (~includeAdhoc)
+            mod.atomContextXSaved{iatom,ienv+1} = pcaContext;
+         else
+            adHoc = atomAdhoc{imod}{iatom,ienv+1};
+            fullContext = [adHoc(:);pcaContext(:)];
+            mod.atomContextXSaved{iatom,ienv+1} = fullContext;
+         end
+      end
+   end
+   
+   mod.bondContextXSaved = cell(mod.natom,mod.natom,mod.nenv+1);
+   for iatom = 1:mod.natom
+      for jatom = find(mod.isBonded(iatom,:))
+         itype = find(atypes == mod.aType(iatom));
+         jtype = find(atypes == mod.aType(jatom));
+         c1 = bondContexts{itype,jtype};
+         for ienv = 0:mod.nenv % allEnvs{imod}
+            pcaContext = c1.project(mod,ienv,iatom,jatom);
             if (~includeAdhoc)
                 mod.atomContextXSaved{iatom,ienv+1} = pcaContext;
             else
@@ -168,7 +190,8 @@ for imod = 1:length(allMods)
                 mod.atomContextXSaved{iatom,ienv+1} = fullContext;
             end
         end
-    end
+      end
+   end
     
     mod.bondContextXSaved = cell(mod.natom,mod.natom,mod.nenv+1);
     for iatom = 1:mod.natom
