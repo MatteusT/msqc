@@ -63,7 +63,7 @@ else
       disp([num2str(ipar),' par = ',num2str(par)]);
       
       config = Fragment.defaultConfig();
-      config.method = 'MP2';
+      config.method = 'HF';
       config.par = par;
       
       % HL
