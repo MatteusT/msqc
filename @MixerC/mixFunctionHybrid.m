@@ -21,7 +21,7 @@ end
 % We first determine the original H elements between the hybrid orbs:
 %     <a|H|b> = sum_j,k <a|j><j|H|k><k|b>
 %      Hhyb     =     rot' * H * rot   
-Hhyb0 = rot1' * v0 * rot2; 
+Hhyb0 = rot1' * v0 * rot2;
 Hhyb1 = rot1' * v1 * rot2;
 Hhyb2 = rot1' * v2 * rot2;
 
@@ -34,9 +34,7 @@ Hmod = obj.mixFunctionNormal(x,Hhyb0,Hhyb1,Hhyb2);
 %     H     =  rot * Hhyb * rot'
 %     H     =  H - rot*hhyb*rot' + rot*Hmod*rot'
 
-res = v0 - rot1 * Hhyb0 * rot2'+ rot1 * Hmod * rot2'; 
-%put trace since otherwise the results dimensions will not agree with the
-%calculated
+res = v0 - rot1 * Hhyb0 * rot2' + rot1 * Hmod * rot2'; 
 
 end
 
@@ -89,7 +87,7 @@ coord = mod.coord(a1);
 if (coord ~= 3)
    error('pi bond between atoms without 3 fold coordination');
 end
-[junk,bondedAtoms] = find(bonded == 1);
+[~,bondedAtoms] = find(bonded == 1);
 r1 = mod.rcart(:,bondedAtoms(1));
 r2 = mod.rcart(:,bondedAtoms(2));
 r3 = mod.rcart(:,bondedAtoms(3));

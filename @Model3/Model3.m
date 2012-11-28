@@ -57,6 +57,7 @@ classdef Model3 < handle
       atomContextNSaved % {iatom}
       bondContextXSaved % {iatom,jatom,ienv}
       bondContextNSaved % {iatom,jatom}
+      index % used and managed externally
    end
    methods
       function res = Model3(frag_,fnar_, fdif_)
@@ -129,6 +130,15 @@ classdef Model3 < handle
          res.bondContextXSaved = {};
          res.bondContextNSaved = {};
          end
+      end
+      function clearModifiers(obj)
+         obj.KEmods = cell(0,0);
+         obj.ENmods = cell(1,obj.natom);
+         for i=1:obj.natom
+            obj.ENmods{1,i} = cell(0,0);
+         end
+         obj.H2mods = cell(0,0);
+         obj.mixers = cell(0,0);
       end
       function res = npar(obj)
          res = 0;
