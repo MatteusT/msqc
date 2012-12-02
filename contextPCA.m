@@ -1,10 +1,10 @@
 % clear classes;
 % close all;
-topDir = 'C:\Users\mtanha\MSQC\msqc\contextPCA1sSPaType\';
+topDir = 'C:\Users\mtanha\MSQC\msqc\contextPCA1sSP\';
 fitmeParallel = 0;
 psc = 0; % does not use optimization toolbox
-includeMethane = 1;
-includeEthane = 0;
+includeMethane = 0;
+includeEthane = 1;
 includeAdhoc = 1;
 separateSP = 0;
 include1s = 0;
@@ -39,14 +39,14 @@ for i1 = 1:length(files)
    for i = train
       mtrain{end+1} = Model3(LL{i,1},LL{i,1},LL{i,1});
       mtrain{end}.solveHF;
-      mtrain{end}.atomTyping;
+%       mtrain{end}.atomTyping;
       HLtrain{end+1} = HL{i,1};
       envsTrain{1,end+1} = envs1;
    end
    for i = test
       mtest{end+1} = Model3(LL{i,1},LL{i,1},LL{i,2});
       mtest{end}.solveHF;
-      mtest{end}.atomTyping;
+%       mtest{end}.atomTyping;
       HLtest{end+1} = HL{i,1};
       envsTest{end+1} = envs2;
    end
