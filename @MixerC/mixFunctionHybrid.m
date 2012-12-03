@@ -87,7 +87,7 @@ coord = mod.coord(a1);
 if (coord ~= 3)
    error('pi bond between atoms without 3 fold coordination');
 end
-[~,bondedAtoms] = find(bonded == 1);
+[junk,bondedAtoms] = find(bonded == 1);
 r1 = mod.rcart(:,bondedAtoms(1));
 r2 = mod.rcart(:,bondedAtoms(2));
 r3 = mod.rcart(:,bondedAtoms(3));

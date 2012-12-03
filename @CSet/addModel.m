@@ -45,7 +45,7 @@ for iatom = 1:model.natom
    switch ctype
       case 'r'
          bonded = model.isBonded(iatom,:);
-         [~,bondedAtoms] = find(bonded == 1);
+         [junk,bondedAtoms] = find(bonded == 1);
          bondLengths = zeros(length(bondedAtoms),1);
          ic = 0;
          for jatom = bondedAtoms
@@ -60,7 +60,7 @@ for iatom = 1:model.natom
          res(iatom,:) = model.charges(iatom,:)-model.charges(iatom,1);
       case 'bo'
          bonded = model.isBonded(iatom,:);
-         [~,bondedAtoms] = find(bonded == 1);
+         [junk,bondedAtoms] = find(bonded == 1);
          for ienv = 0:model.nenv
             bondOrders  = zeros(length(bondedAtoms),1);
             ic = 0;

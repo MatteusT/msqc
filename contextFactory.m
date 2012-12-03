@@ -1,6 +1,6 @@
 clear classes;
 close all;
-topDir = 'C:/matdl/yaron/11-29-12/factory2/';
+topDir = 'C:/Users/Matteus/Research/msqc/factory2/';
 maxIter = 500;
 
 % CREATE MODEL SETS
