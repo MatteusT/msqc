@@ -1,6 +1,6 @@
 clear classes;
 close all;
-topDir = 'C:/matdl/yaron/11-19-12/contextPCA-nohybrid/';
+topDir = 'C:\Users\mtanha\MSQC\msqc\contextPCA1sSP\';
 fitmeParallel = 1;
 fitmeEtotOnly = 1;
 psc = 0; % does not use optimization toolbox
@@ -69,12 +69,14 @@ for i1 = 1:length(files)
    for i = train
       mtrain{end+1} = Model3(LL{i,1},LL{i,1},LL{i,1});
       mtrain{end}.solveHF;
+%       mtrain{end}.atomTyping;
       HLtrain{end+1} = HL{i,1};
       envsTrain{1,end+1} = envs1;
    end
    for i = test
       mtest{end+1} = Model3(LL{i,1},LL{i,1},LL{i,2});
       mtest{end}.solveHF;
+%       mtest{end}.atomTyping;
       HLtest{end+1} = HL{i,1};
       envsTest{end+1} = envs2;
    end
