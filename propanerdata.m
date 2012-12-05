@@ -4,7 +4,7 @@ reset(RandStream.getDefaultStream,sum(100*clock))
 
 %root = 'c:\dave\apoly\msqc\dataz';
 %dataroot = 'c:/dave/apoly/msqc/dataz/ch4r';
-root = 'C:\Users\mtanha\MSQC\msqc\datasets';
+root = 'C:\Users\Matteus\Research\msqc\datasets';
 filename = 'propaner-orig';
 dataroot = [root,'\',filename];
 
@@ -74,7 +74,7 @@ else
                 rr1(t1,t2) rr1(t1,t2) rr1(t1,t2)];
             
             dihedrals = [ -rr1(p3,p4) rr1(p1,p2) rr1(p3,p4) rr1(p1,p2)...
-                -rr1(p3,p4) -rr1(p3,p4) rr1(p1,p2) rr1(p3,p4)];
+                rr1(p3,p4) -rr1(p3,p4) rr1(p1,p2) rr1(p3,p4)];
             
             par = [bonds,angles,dihedrals];
             
