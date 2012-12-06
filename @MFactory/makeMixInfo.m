@@ -15,6 +15,10 @@ for ip = 1:length(obj.policy)
                obj.mixInfo = [obj.mixInfo, makeENDiag(pol,atype)]; 
             case 'E2'
                obj.mixInfo = [obj.mixInfo, makeE2Diag(pol,atype)]; 
+             case '*'
+               obj.mixInfo = [obj.mixInfo, makeKEDiag(pol,atype)];
+               obj.mixInfo = [obj.mixInfo, makeENDiag(pol,atype)]; 
+               obj.mixInfo = [obj.mixInfo, makeE2Diag(pol,atype)]; 
          end
       end
    else % off diagonal modifier
@@ -25,9 +29,17 @@ for ip = 1:length(obj.policy)
             end
             switch pol.oper
                case {'KE','EN'}
-                  obj.mixInfo = [obj.mixInfo, makeH1Bond(pol,atype,btype)];
+                  obj.mixInfo = [obj.mixInfo, ...
+                      makeH1Bond(pol,pol.oper,atype,btype)];
                case 'E2'
                   obj.mixInfo = [obj.mixInfo, makeE2Bond(pol,atype,btype)];
+                case '*'
+                  obj.mixInfo = [obj.mixInfo, ...
+                      makeH1Bond(pol,'KE',atype,btype)];
+                  obj.mixInfo = [obj.mixInfo, ...
+                      makeH1Bond(pol,'EN',atype,btype)];
+                  obj.mixInfo = [obj.mixInfo, makeE2Bond(pol,atype,btype)];
+                  
             end
          end
       end
@@ -37,7 +49,14 @@ end
 % Create array of mixers
 obj.mixer = cell(0,0);
 for i = 1:length(obj.mixInfo)
-   obj.addMixer(obj.mixInfo{i}.mixer);
+   switch obj.mixInfo{i}.type
+      case 'E2slater'
+         obj.addMixer(obj.mixInfo{i}.mixerF0);
+         obj.addMixer(obj.mixInfo{i}.mixerG1);
+         obj.addMixer(obj.mixInfo{i}.mixerF2);
+      otherwise
+         obj.addMixer(obj.mixInfo{i}.mixer);
+   end
 end
 
 end
@@ -107,6 +126,9 @@ else
          m1 = makeInfo(mix,'KEdiags',atype);
          m2 = makeInfo(mix,'KEdiagp',atype);
          res = {m1 m2};
+      case 'core'
+         desc1 = [desc,' core']; 
+         res = makeInfo(makeMixer(pol,desc1),'KEcore',atype);
       case 'sonly'
          desc1 = [desc,' 2s']; 
          res = makeInfo(makeMixer(pol,desc1),'KEdiags',atype);
@@ -138,12 +160,15 @@ else
          m1 = makeInfo(mix,'ENdiags',atype);
          m2 = makeInfo(mix,'ENdiagp',atype);
          res = {m1 m2};
+      case 'core'
+         desc1 = [desc,' core']; 
+         res = makeInfo(makeMixer(pol,desc1),'ENcore',atype);
       case 'sonly'
          desc1 = [desc,' 2s']; 
-         res = makeInfo(makeMixer(pol,desc1),'KEdiags',atype);
+         res = makeInfo(makeMixer(pol,desc1),'ENdiags',atype);
       case 'ponly'
          desc2 = [desc,' 2p']; 
-         res = makeInfo(makeMixer(pol,desc2),'KEdiagp',atype);
+         res = makeInfo(makeMixer(pol,desc2),'ENdiagp',atype);
       otherwise
          error('sp policy not compatible with ENdiag');
    end
@@ -153,12 +178,28 @@ end
 function res = makeE2Diag(pol,atype)
 res = cell(0,0);
 desc = ['E2 atype ',num2str(atype)];
-res = makeInfo(makeMixer(pol,desc),'E2diag',atype);
+switch pol.sp
+   case 'core'
+      desc = [desc,' core'];
+      res = makeInfo(makeMixer(pol,desc),'E2core',atype);
+   case 'slater'
+      if (Context.atypeToZtype(atype) == 1)
+         res = makeInfo(makeMixer(pol,desc),'E2diag',atype);
+      else
+         res = [];
+         res.type = 'E2slater';
+         res.iatom = atype;
+         res.mixerF0 = makeMixer(pol,[desc,' F0']);
+         res.mixerG1 = makeMixer(pol,[desc,' G1']);
+         res.mixerF2 = makeMixer(pol,[desc,' F2']);
+      end
+   otherwise
+      res = makeInfo(makeMixer(pol,desc),'E2diag',atype);
+end
 end
 
-function res = makeH1Bond(pol,atype,btype)
+function res = makeH1Bond(pol,oper,atype,btype)
 res = cell(0,0);
-oper = pol.oper;
 desc = [oper,' atypes ',num2str(atype),' ',num2str(btype)];
 Za = Context.atypeToZtype(atype);
 Zb = Context.atypeToZtype(btype);
@@ -177,7 +218,7 @@ else
             res{end+1} = makeInfo(mix,[oper,'bondsp'],atype,btype);
          end
          if ((Za > 1) && (Zb > 1))
-            res{end+1} = makeInfo(mix,[oper,'bondsp'],atype,btype);
+            res{end+1} = makeInfo(mix,[oper,'bondpp'],atype,btype);
          end
       case 'hybrid'
          mixSigma = makeMixer(pol,[desc,' sig'],1);
