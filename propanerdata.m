@@ -4,7 +4,7 @@ reset(RandStream.getDefaultStream,sum(100*clock))
 
 %root = 'c:\dave\apoly\msqc\dataz';
 %dataroot = 'c:/dave/apoly/msqc/dataz/ch4r';
-root = 'C:\Users\mtanha\MSQC\msqc\datasets';
+root = 'C:\Users\Matteus\Research\msqc\datasets';
 filename = 'propaner-orig';
 dataroot = [root,'\',filename];
 

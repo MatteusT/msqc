@@ -5,11 +5,11 @@ load('datasets/propaner-orig.mat');
 mtrain = cell(0,0);
 HLtrain = cell(0,0);
 envsTrain = cell(0,0);
-for i = 1:10
+for i = 1:3
    mtrain{end+1} = Model3(LL{i,1},LL{i,1},LL{i,1});
    mtrain{end}.solveHF;
    HLtrain{end+1} = HL{i,1};
-   envsTrain{1,end+1} = 1:2:20;
+   envsTrain{1,end+1} = 1:3;
 end
 mtest = cell(0,0);
 HLtest = cell(0,0);
@@ -35,6 +35,7 @@ ms = MSet;
 ms.addData('datasets/propaner-orig.mat',1:5,1:10,1,791);
 ms2 = MSet;
 ms2.addData('datasets/propaner-orig.mat',6:10,11:20,1,791);
+
 %ms.addData('datasets/ethanerDat.mat',1:2,1:4,1,791);
 disp(['atom types ',num2str(ms.atomTypes)]);
 
@@ -64,14 +65,13 @@ m1.addPolicy('o','E2', 'f','scale', 'sp','hybrid', 'i',6, 'j',6, ...
    'c','r bo q');
 
 m1.addPolicy('o','E2', 'f','scale', 'sp','sonly', 'i',1, 'j',1, ...
-   'c','r');
+   'c','r','nb',1);
 
 m1.makeMixInfo(ms.atomTypes);
 m1.printMixInfo;
 
-[f1,c1] = m1.makeFitme(ms);
-[f2,c2] = m1.makeFitme(ms2);
-c1.saveIndices;
+f1 = m1.makeFitme(ms);
+%[f2,c2] = m1.makeFitme(ms2);
 %%
 for i = 1:length(f1.mixers)
    if (length(f1.mixers{i}.fixed) > 1)
