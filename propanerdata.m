@@ -8,7 +8,7 @@ root = 'C:\Users\mtanha\MSQC\msqc\datasets';
 filename = 'propaner-orig';
 dataroot = [root,'\',filename];
 
-loadResults = 0;
+loadResults = 1;
 tplName = 'propane';
 if (~exist(dataroot,'dir'))
     mkdir(dataroot,'s');
@@ -39,7 +39,7 @@ p3 = 60 - 9.0;
 p4 = 60 + 9.0;
 
 pars = cell(0,0);
-maxpars =10;
+maxpars =20;
 HLbasis = {'6-31G'};% '6-31G*' '6-31G**'};
 HL = cell(0,0);
 LL = cell(0,0);
@@ -74,7 +74,7 @@ else
                 rr1(t1,t2) rr1(t1,t2) rr1(t1,t2)];
             
             dihedrals = [ -rr1(p3,p4) rr1(p1,p2) rr1(p3,p4) rr1(p1,p2)...
-                -rr1(p3,p4) -rr1(p3,p4) rr1(p1,p2) rr1(p3,p4)];
+                rr1(p3,p4) -rr1(p3,p4) rr1(p1,p2) rr1(p3,p4)];
             
             par = [bonds,angles,dihedrals];
             

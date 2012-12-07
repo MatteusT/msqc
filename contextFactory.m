@@ -1,10 +1,10 @@
 clear classes;
 close all;
-topDir = 'C:/Users/Matteus/Research/msqc/factory2/';
+topDir = 'C:/Users/mtanha/MSQC/msqc/factory3/';
 maxIter = 500;
 
 % CREATE MODEL SETS
-dataf = {'ch4rDat','ch4rDat-1c','ch4rDat-diponly','ch4rDat-linrho','ethanerDat'};
+dataf = {'propaner-orig','ch4rDat','ethanerDat'};%'ch4rDat-1c','ch4rDat-diponly','ch4rDat-linrho','ethanerDat'};
 dsets = cell(1,2);
 dname = cell(1,1);
 for idata = 1:length(dataf);

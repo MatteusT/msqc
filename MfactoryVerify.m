@@ -1,6 +1,6 @@
 %% Create original style 
 clear classes
-load('datasets/ch4rDat.mat');
+load('datasets/propaner-orig.mat');
 %load('datasets/ethanerDat.mat');
 mtrain = cell(0,0);
 HLtrain = cell(0,0);
@@ -32,9 +32,9 @@ save('debug1.mat','forig');
 clear classes;
 load('debug1.mat');
 ms = MSet;
-ms.addData('datasets/ch4rDat.mat',1:10,1:2:20,1,791);
+ms.addData('datasets/propaner-orig.mat',1:5,1:10,1,791);
 ms2 = MSet;
-ms2.addData('datasets/ch4rDat.mat',11:20,2:2:20,1,791);
+ms2.addData('datasets/propaner-orig.mat',6:10,11:20,1,791);
 %ms.addData('datasets/ethanerDat.mat',1:2,1:4,1,791);
 disp(['atom types ',num2str(ms.atomTypes)]);
 

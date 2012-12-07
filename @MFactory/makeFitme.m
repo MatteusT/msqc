@@ -1,4 +1,4 @@
-function fitme = makeFitme(obj,ms,f1)
+function [fitme,cset]= makeFitme(obj,ms,f1)
 
 if (nargin < 3)
    HLfromF1 = false;
