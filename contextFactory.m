@@ -1,9 +1,9 @@
 clear classes;
 close all;
-topDir = 'C:/Users/mtanha/MSQC/msqc/factory3/';
+topDir = 'C:/Users/mtanha/MSQC/msqc/factoryInterp/';
 maxIter = 500;
 
-h2fits = 1;
+h2fits = 0;
 combinations = 0;
 costs = [0.0001 0.1];
 printDetailsOnLoad = 1;
@@ -21,7 +21,7 @@ if (h2fits)
   dsets{1,2} = ms;
 else
 % CREATE MODEL SETS
-dataf = {'propaner-orig','ch4rDat','ethanerDat'};%'ch4rDat-1c','ch4rDat-diponly','ch4rDat-linrho','ethanerDat'};
+dataf = {'ch4rDat','ethanerDat','propaner-orig'};%'ch4rDat-1c','ch4rDat-diponly','ch4rDat-linrho','ethanerDat'};
 
 dsets = cell(1,2);
 dname = cell(1,1);
@@ -73,8 +73,8 @@ pname = cell(0,0);
 if (h2fits)
 pname{1} = 'h2';
 m1 = MFactory;
-m1.addPolicy('o','*', 'i',1, 'f','scale',  'sp','separate', 'c','r q bo');
-m1.addPolicy('o','*', 'i',1, 'j',1, 'f','scale',  'sp','hybrid', 'c','r bo q');
+m1.addPolicy('o','*', 'i',1, 'f','interp',  'sp','separate', 'c','r q bo');
+m1.addPolicy('o','*', 'i',1, 'j',1, 'f','interp',  'sp','hybrid', 'c','r bo q');
 policies{end+1} = m1.policy;
 m1 = [];
 else
@@ -155,15 +155,15 @@ else
 pname{end+1} = 'hybridslater';
 m1 = MFactory;
 % Diag core on C only
-m1.addPolicy('o','*', 'i',6, 'f','scale',  'sp','core');
-m1.addPolicy('o','KE', 'i','*', 'f','scale',  'sp','separate', 'c','r q bo');
-m1.addPolicy('o','EN', 'i','*', 'f','scale',  'sp','separate', 'c','r q bo');
-m1.addPolicy('o','E2', 'i','*', 'f','scale',  'sp','slater', 'c','r q bo');
+m1.addPolicy('o','*', 'i',6, 'f','interp',  'sp','core');
+m1.addPolicy('o','KE', 'i','*', 'f','interp',  'sp','separate', 'c','r q bo');
+m1.addPolicy('o','EN', 'i','*', 'f','interp',  'sp','separate', 'c','r q bo');
+m1.addPolicy('o','E2', 'i','*', 'f','interp',  'sp','slater', 'c','r q bo');
 
 % Bonding
-m1.addPolicy('o','*', 'i','*', 'j','*', 'f','scale',  'sp','hybrid', 'c','r bo q');
+m1.addPolicy('o','*', 'i','*', 'j','*', 'f','interp',  'sp','hybrid', 'c','r bo q');
 % nonbond between hydrogen
-m1.addPolicy('o','E2', 'i',1,   'j',1,  'f','scale',  'sp','sonly',  ...
+m1.addPolicy('o','E2', 'i',1,   'j',1,  'f','interp',  'sp','sonly',  ...
    'c','bo','nb',1);
 policies{end+1} = m1.policy;
 m1 = [];
