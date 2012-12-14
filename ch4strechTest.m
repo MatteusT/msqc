@@ -10,9 +10,9 @@ for idata = 1:length(dataf);
     mf = MFactory;
     ms = MSet;
     if idata == 1
-        ms.addData(dfile, 1:15, 1:12,1,791);
+        ms.addData(dfile, 1:15, 0:12,1,791);
     elseif idata == 2
-        ms.addData(dfile, 6:15, 1:12,1,791);
+        ms.addData(dfile, 6:15, 0:12,1,791);
     end
     dsets{idata} = ms;
 end
@@ -24,7 +24,7 @@ end
 fact.mixer{end}.bonded= 0;
 fct{1} = fact;
 %%
-color={'b-','r-','g-','k-','m-','y-','bx','rx','gx','kx','mx','yx'};
+color={'co','b-','r-','g-','k-','m-','y-','bx','rx','gx','kx','mx','yx'};
 etot1= [];
 etot2= [];
 f1 = [];
@@ -34,17 +34,17 @@ for idata = 1:length(dataf);
     [err pnum etype] = f1{idata}.err(f1{idata}.getPars);
     nmb =[];
     if idata == 1
-        range= 1:180;
+        range= 1:195;
         ngeom = 15;
           etot1 = err(etype == 3);
     elseif idata == 2
-        range= 1:120;
+        range= 1:130;
         ngeom = 10;
         etot2 = err(etype == 3);
     end
     
     step2 = 0;
-    estep = 11;
+    estep = 12;
     
     for in = 1:ngeom
         step1 = step2+1;
@@ -53,7 +53,7 @@ for idata = 1:length(dataf);
     end
 
     ext = 0.85:0.03:1.42;
-    for i = 1:12
+    for i = 1:13
         ic = 0;
         for i2 = 1:ngeom
             ic = ic+1;
