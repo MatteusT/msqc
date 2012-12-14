@@ -1,4 +1,7 @@
-function fitme = makeFitme(obj,ms,f1)
+function [fitme,cset] = makeFitme(obj,ms,f1)
+% If f1 is passed, then it extracts the high level KE, EN etc from the
+% fitme object. If f1 is not passed, then it constructs these HL values
+% from the high level object in ms. 
 
 if (nargin < 3)
    HLfromF1 = false;
@@ -23,16 +26,25 @@ for imix = 1:length(obj.mixInfo)
    for imod = 1:length(model)
       mod = model{imod};
       switch minfo.type
+         case 'KEcore'
+            mod.addKEcore(minfo.iatom,minfo.mixer);
          case 'KEdiags'
             mod.addKEmodDiag(minfo.iatom,1,minfo.mixer);
          case 'KEdiagp'
             mod.addKEmodDiag(minfo.iatom,2,minfo.mixer);
+         case 'ENcore'
+            mod.addENcore(minfo.iatom,minfo.mixer);
          case 'ENdiags'
             mod.addENmodDiag(minfo.iatom,1,minfo.mixer);
          case 'ENdiagp'
             mod.addENmodDiag(minfo.iatom,2,minfo.mixer);
+         case 'E2core'
+            mod.addH2core(minfo.iatom,minfo.mixer);
          case 'E2diag'
-               mod.addH2modDiag(minfo.iatom,minfo.mixer);
+            mod.addH2modDiag(minfo.iatom,minfo.mixer);
+         case 'E2slater'
+            mod.addH2modSlater(minfo.iatom,minfo.mixerF0, ...
+               minfo.mixerG1,minfo.mixerF2);
          case 'KEbondss'
             mod.addKEmodBonded(minfo.iatom,minfo.jatom,1,1,minfo.mixer);
          case 'KEbondsp'

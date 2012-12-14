@@ -7,7 +7,11 @@ fitme = cell(0,0);
 fname = cell(0,0);
 dataExt = {'','-1c','-linrho','-diponly'};
 for iext = 1:4
-   load(['C:\matdl\yaron\11-29-12\factory\hybrid1\ch4r',dataExt{iext},'\all-3.mat'])
+   load(['C:\Users\Matteus\Research\msqc\factory\hybrid1\ch4r',dataExt{iext},'\all-3.mat'])
+      for i= 1:length(fact.mixer)
+       fact.mixer{i}.bonded = 1;
+   end
+   fact.mixer{end}= 0;
    fct{end+1} = fact;  fitme{end+1} = f1;  ms{end+1} = MSet.fromFitme(f1);
 end
 fname = {'orig','1c','lin','dip'};
@@ -18,7 +22,7 @@ esum = zeros(nfact,ndata);
 for ifact = 1:nfact
    for idata = 1:ndata
       disp(['factory: ',fname{ifact},'   data: ',fname{idata}]);
-      [f1 c1] = fct{ifact}.makeFitme(ms{idata},fitme{idata});
+      f1 = fct{ifact}.makeFitme(ms{idata},fitme{idata});
       res1 = f1.printEDetails;
       disp(' ');
       esum(ifact,idata) = res1{1}.etot;
@@ -38,3 +42,5 @@ for ifact = 1:nfact
    end
    fprintf(ofile,'\n');
 end
+
+%%
