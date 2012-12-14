@@ -4,13 +4,13 @@ reset(RandStream.getDefaultStream,sum(100*clock))
 
 %root = 'c:\dave\apoly\msqc\dataz';
 %dataroot = 'c:/dave/apoly/msqc/dataz/ch4r';
-root = 'c:\matdl\data';
-filename = 'cf4r-orig';
+root = 'C:\Users\mtanha\MSQC\data';
+filename = 'ch4r-noenv';
 dataroot = [root,'\',filename];
 
-CF4 = 1; 
-loadResults = 0;
-
+CF4 = 0; 
+loadResults = 1;
+tplName = 'ch4';
 if (~exist(dataroot,'dir'))
    mkdir(dataroot,'s');
    if (~CF4)
@@ -21,17 +21,18 @@ if (~exist(dataroot,'dir'))
       tplName = 'cf4';
       copyfile('templates/cf4.tpl',[dataroot,'/cf4.tpl']);
    end
-   copyfile('datasets/env2.mat',[dataroot,'/env2.mat']);
+%    copyfile('datasets/env2.mat',[dataroot,'/env2.mat']);
 end
 
 % Copying the 
-load(['datasets/env2.mat']);
-envOrig = env;
-envs1 = [6     7     8    13    16    24];
-envs2 = [5    10    14    17    20    25];
-envsJ = [envs1,envs2];
-env={envOrig{envsJ} };
-nenv = length(env);
+% load(['datasets/env2.mat']);
+% envOrig = env;
+% envs1 = 1;%[6     7     8    13    16    24];
+% envs2 = 1; %[5    10    14    17    20    25];
+% envsJ = [envs1,envs2];
+% env={envOrig{envsJ} };
+% nenv = length(env);
+nenv = 0;
 
 if (CF4)
    % r = 1.39 from http://en.wikipedia.org/wiki/Fluoromethane
@@ -47,7 +48,7 @@ p1 = 120 - 3;
 p2 = 120 + 3;
 
 pars = cell(0,0);
-maxpars =20;
+maxpars =200;
 HLbasis = {'6-31G'};% '6-31G*' '6-31G**'};
 HL = cell(0,0);
 LL = cell(0,0);
@@ -70,7 +71,7 @@ end
 
 
 
-for ipar = 1:maxpars
+for ipar = 183:200
    %pars{1} = [1.12 1.12 1.12 1.12 109.47 109.47 109.47 120.0 -120.0];
    if (loadResults)
       par = parsIn{ipar};
@@ -83,7 +84,7 @@ for ipar = 1:maxpars
    disp([num2str(ipar),' par = ',num2str(par)]);
    
    config = Fragment.defaultConfig();
-   config.method = 'MP2';
+   config.method = 'HF';
    config.par = par;
    
    % HL

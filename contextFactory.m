@@ -1,10 +1,10 @@
 clear classes;
 close all;
-topDir = 'C:/Users/Matteus/Research/msqc/factory2/';
+topDir = 'C:/Users/mtanha/MSQC/msqc/factory/';
 maxIter = 500;
 
 % CREATE MODEL SETS
-dataf = {'ch4rDat','ch4rDat-1c','ch4rDat-diponly','ch4rDat-linrho','ethanerDat'};
+dataf = {'ch4r-noenv'};%{'ch4rDat','ch4rDat-1c','ch4rDat-diponly','ch4rDat-linrho','ethanerDat'};
 dsets = cell(1,2);
 dname = cell(1,1);
 for idata = 1:length(dataf);
@@ -12,11 +12,11 @@ for idata = 1:length(dataf);
    dfile = ['datasets/',dataf{idata},'.mat'];
    % train data
    ms = MSet;
-   ms.addData(dfile, 1:10, 1:2:20 ,1,791);
+   ms.addData(dfile, 1:100, 0 ,1,791);
    dsets{idata,1} = ms;
    % test data
    ms = MSet;
-   ms.addData(dfile, 11:20, 2:2:20 ,1,791);
+   ms.addData(dfile, 101:200, 0 ,1,791);
    dsets{idata,2} = ms;
 end
 
