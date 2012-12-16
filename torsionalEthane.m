@@ -5,16 +5,16 @@ reset(RandStream.getDefaultStream,sum(100*clock))
 
 %root = 'c:\dave\apoly\msqc\dataz';
 %dataroot = 'c:/dave/apoly/msqc/dataz/ch4r';
-root = 'C:\Users\Matteus\Research\msqc\datasets';
+root = 'C:\Users\mtanha\MSQC\msqc\datasets';
 filename = 'ethanetor-orig';
 dataroot = [root,'\',filename];
 
 loadResults = 0;
-      tplName = 'ethane';
+      tplName = 'ethane1';
 if (~exist(dataroot,'dir'))
    mkdir(dataroot,'s');
-      tplName = 'ethane';
-      copyfile('templates/ethane1.tpl',[dataroot,'/ethane11.tpl']);
+      tplName = 'ethane1';
+      copyfile('templates/ethane1.tpl',[dataroot,'/ethane1.tpl']);
       copyfile('templates/ethane1-gen.tpl',[dataroot,'/ethane1-gen.tpl']);
    copyfile('datasets/env2.mat',[dataroot,'/env2.mat']);
 end
@@ -32,7 +32,7 @@ step = 20;
 
 
 pars = cell(0,0);
-HLbasis = {'6-31G'}
+HLbasis = {'6-31G'};
 HL = cell(0,0);
 LL = cell(0,0);
 % Load data into a *.mat file
@@ -92,7 +92,7 @@ for ipar = 1:maxpars
    
 
       % LL 2
-      config.template = 'ch4-gen';
+      config.template = [tplName,'-gen'];
       config.basisSet = 'GEN';
       config.par = [par 0.9 0.9 0.9 0.9 0.9];
       frag3 = Fragment(dataroot, config);
@@ -103,7 +103,7 @@ for ipar = 1:maxpars
       end
       LL{ipar,2} = frag3;
       % LL 3
-      config.template = 'ch4-gen';
+      config.template = [tplName,'-gen'];
       config.basisSet = 'GEN';
       config.par = [par 1.05 1.05 1.05 1.05 1.05];
       disp(['ipar ',num2str(ipar),' loading LL 3']);
