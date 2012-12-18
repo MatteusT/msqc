@@ -5,11 +5,11 @@ reset(RandStream.getDefaultStream,sum(100*clock))
 %root = 'c:\dave\apoly\msqc\dataz';
 %dataroot = 'c:/dave/apoly/msqc/dataz/ch4r';
 root = 'C:\Users\Matteus\Research\msqc\datasets';
-filename = 'propaner-orig';
+filename = 'butaner-orig';
 dataroot = [root,'\',filename];
 
 loadResults = 1;
-tplName = 'propane';
+tplName = 'Butane';
 if (~exist(dataroot,'dir'))
     mkdir(dataroot,'s');
     copyfile('templates/propane.tpl',[dataroot,'/propane.tpl']);
