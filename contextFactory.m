@@ -5,9 +5,11 @@ maxIter = 500;
 
 h2fits = 0;
 combinations = 0;
-costs = [0.0001 0.1];
-printDetailsOnLoad = 1;
-
+costs = []; %[5 10 25 50]; %[0.0001 0.1];
+printDetailsOnLoad = 0;
+weights = 1:-0.1:0;% 1:10;
+for weightProp = 0:1
+for weightFromScratch = 0:1;
 if (h2fits)
   dsets = cell(1,2);
   dname = cell(1,1);
@@ -21,9 +23,11 @@ if (h2fits)
   dsets{1,2} = ms;
 else
 % CREATE MODEL SETS
+
 dataf = {'ch4rDat','ethanerDat','propaner-orig','ethylenerDat'};%'ch4rDat-1c','ch4rDat-diponly','ch4rDat-linrho','ethanerDat'};
 
  pnn = [791,792,793,794];
+
 dsets = cell(1,2);
 dname = cell(1,1);
 for idata = 1:length(dataf)
@@ -40,7 +44,7 @@ for idata = 1:length(dataf)
 end
 
 if (combinations)
-   combs = {[1 2], [2 3], [1 2 3]};
+   combs = {[1 2]};%, [2 3], [1 2 3]};
    dtemp = dsets;
    ntemp = dname;
    dsets = cell(0,0);
@@ -168,6 +172,17 @@ m1.addPolicy('o','E2', 'i',1,   'j',1,  'f','interp',  'sp','sonly',  ...
    'c','bo','nb',1);
 policies{end+1} = m1.policy;
 m1 = [];
+
+% pname{end+1} = 'shift';
+% m1 = MFactory;
+% m1.addPolicy('o','KE', 'i',6, 'f','const',  'sp','shift');
+% m1.addPolicy('o','EN', 'i',1, 'f','const',  'sp','shift');
+% m1.addPolicy('o','EN', 'i',6, 'f','const',  'sp','shift');
+% m1.addPolicy('o','E2', 'i',6, 'f','scale',  'sp','shift');
+% 
+% policies{end+1} = m1.policy;
+% m1 = [];
+
 end
 %%
 for ipol = 1:length(policies)
@@ -289,6 +304,46 @@ for ipol = 1:length(policies)
             ftest.printEDetails(summaryFile);
          end
       end
+      if (~isempty(weights))
+         for weight = weights
+%             startName = [topDir,filePre,'/all-',num2str(3),'.mat'];
+%             fprintf(1,'LOADING %s for cost %10.5f \n',allName,cost);
+%             fprintf(summaryFile,'LOADING %s for cost %10.5f \n',allName,cost);
+%             load(allName,toSave{:});
+            weightDir = [topDir,filePre,'/all-',num2str(3),'-weight'];
+            if (weightProp)
+               weightDir = [weightDir,'p'];
+            end
+            if (weightFromScratch)
+               weightDir = [weightDir,'-scratch'];
+            end
+            if (exist(weightDir,'dir') ~= 7)
+               status = mkdir(weightDir);
+            end
+            allName = [weightDir,'/all-',num2str(weight),'.mat'];
+            if (exist(allName,'file'))
+               fprintf(1,'LOADING WEIGHT %10.5f \n',weight);
+               fprintf(summaryFile,'LOADING WEIGHT %10.5f \n',weight);
+               load(allName,toSave{:});
+            else
+               fprintf(1,'STARTING WEIGHT %10.5f \n',weight);
+               fprintf(summaryFile,'STARTING WEIGHT %10.5f \n',weight);
+               f1.setWeights(weight,weightProp);
+               [currentTrainErr,currentPar,currentErr] = ...
+                  contextFit3(f1,ftest,maxIter);
+               save(allName,toSave{:});
+            end
+            if (weightFromScratch)
+               f1.setPars(zeros(size(f1.getPars)));
+            end
+            str2 = 'context error %12.5f test %12.5f \n';
+            fprintf(1,str2,currentTrainErr,currentErr);
+            fprintf(summaryFile,str2,currentTrainErr,currentErr);
+            f1.printEDetails(summaryFile);
+            ftest.printEDetails(summaryFile);
+         end
+
+      end
 
       runTime = toc(ticID)
       diary off;
@@ -306,3 +361,5 @@ for ipol = 1:length(policies)
 end
 
 
+end
+end
