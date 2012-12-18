@@ -21,8 +21,9 @@ if (h2fits)
   dsets{1,2} = ms;
 else
 % CREATE MODEL SETS
-dataf = {'ch4rDat','ethanerDat','propaner-orig'};%'ch4rDat-1c','ch4rDat-diponly','ch4rDat-linrho','ethanerDat'};
+dataf = {'ch4rDat','ethanerDat','propaner-orig','ethylenerDat'};%'ch4rDat-1c','ch4rDat-diponly','ch4rDat-linrho','ethanerDat'};
 
+ pnn = [791,792,793,794];
 dsets = cell(1,2);
 dname = cell(1,1);
 for idata = 1:length(dataf)
