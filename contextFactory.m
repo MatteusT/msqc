@@ -7,9 +7,9 @@ h2fits = 0;
 combinations = 0;
 costs = []; %[5 10 25 50]; %[0.0001 0.1];
 printDetailsOnLoad = 0;
-weights = 1:-0.1:0;% 1:10;
-for weightProp = 0:1
-for weightFromScratch = 0:1;
+weights = [40:-4:4 3 2 1:-0.1:0];% 1:10;
+for weightProp = 1
+for weightFromScratch = 0:1
 if (h2fits)
   dsets = cell(1,2);
   dname = cell(1,1);

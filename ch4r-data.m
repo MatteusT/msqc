@@ -2,46 +2,56 @@
 clear classes;
 reset(RandStream.getDefaultStream,sum(100*clock))
 
+CF4 = 0;
+CH3F = 1;
+
 %root = 'c:\dave\apoly\msqc\dataz';
 %dataroot = 'c:/dave/apoly/msqc/dataz/ch4r';
 root = 'C:\Users\mtanha\MSQC\data';
 filename = 'ch4r-noenv';
 dataroot = [root,'\',filename];
-
 CF4 = 0; 
 loadResults = 1;
 tplName = 'ch4';
+loadResults = 0;
+if (CF4)
+   filename = 'cf4r-orig';
+elseif (CH3F)
+   filename = 'ch3f';
+else
+   filename = 'ch4';
+end
 if (~exist(dataroot,'dir'))
    mkdir(dataroot,'s');
-   if (~CF4)
+   if (CF4)
+      tplName = 'cf4';
+      copyfile('templates/cf4.tpl',[dataroot,'/cf4.tpl']);
+   elseif (CH3F)
+      tplName = 'ch3f';
+      copyfile('templates/ch3f.tpl',[dataroot,'/ch3f.tpl']);      
+   else
       tplName = 'ch4';
       copyfile('templates/ch4.tpl',[dataroot,'/ch4.tpl']);
       copyfile('templates/ch4-gen.tpl',[dataroot,'/ch4-gen.tpl']);
-   else
-      tplName = 'cf4';
-      copyfile('templates/cf4.tpl',[dataroot,'/cf4.tpl']);
    end
 %    copyfile('datasets/env2.mat',[dataroot,'/env2.mat']);
 end
 
 % Copying the 
-% load(['datasets/env2.mat']);
+
+load(['datasets/env2.mat']);
 % envOrig = env;
-% envs1 = 1;%[6     7     8    13    16    24];
-% envs2 = 1; %[5    10    14    17    20    25];
+% envs1 = [6     7     8    13    16    24];
+% envs2 = [5    10    14    17    20    25];
 % envsJ = [envs1,envs2];
 % env={envOrig{envsJ} };
-% nenv = length(env);
-nenv = 0;
+nenv = 20;
 
-if (CF4)
-   % r = 1.39 from http://en.wikipedia.org/wiki/Fluoromethane
-   r1  = 1.39 - 0.15;
-   r2 = 1.39 + 0.15;
-else
-   r1  = 1.12 - 0.15;
-   r2 = 1.12 + 0.15;
-end
+% r = 1.39 from http://en.wikipedia.org/wiki/Fluoromethane
+r1f  = 1.39 - 0.15;
+r2f = 1.39 + 0.15;
+r1  = 1.12 - 0.15;
+r2 = 1.12 + 0.15;
 t1 = 109.4 - 3;
 t2 = 109.4 + 3;
 p1 = 120 - 3;
@@ -76,9 +86,19 @@ for ipar = 183:200
    if (loadResults)
       par = parsIn{ipar};
    else
-      par = [rr1(r1,r2) rr1(r1,r2) rr1(r1,r2) rr1(r1,r2) ...
-         rr1(t1,t2) rr1(t1,t2) rr1(t1,t2) ...
-         rr1(p1,p2) -rr1(p1,p2)];
+      if (CF4)
+         par = [rr1(r1f,r2f) rr1(r1f,r2f) rr1(r1f,r2f) rr1(r1f,r2f) ...
+            rr1(t1,t2) rr1(t1,t2) rr1(t1,t2) ...
+            rr1(p1,p2) -rr1(p1,p2)];
+      elseif (CH3F)
+         par = [rr1(r1f,r2f) rr1(r1,r2) rr1(r1,r2) rr1(r1,r2) ...
+            rr1(t1,t2) rr1(t1,t2) rr1(t1,t2) ...
+            rr1(p1,p2) -rr1(p1,p2)];
+      else
+         par = [rr1(r1,r2) rr1(r1,r2) rr1(r1,r2) rr1(r1,r2) ...
+            rr1(t1,t2) rr1(t1,t2) rr1(t1,t2) ...
+            rr1(p1,p2) -rr1(p1,p2)];
+      end
    end
    pars{ipar} = par;
    disp([num2str(ipar),' par = ',num2str(par)]);
@@ -109,7 +129,7 @@ for ipar = 183:200
    end
    LL{ipar,1} = frag2;
    
-   if (CF4)
+   if (1)
       LL{ipar,2} = LL{ipar,1};
       LL{ipar,3} = LL{ipar,1};
    else
