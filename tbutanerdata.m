@@ -5,15 +5,15 @@ reset(RandStream.getDefaultStream,sum(100*clock))
 %root = 'c:\dave\apoly\msqc\dataz';
 %dataroot = 'c:/dave/apoly/msqc/dataz/ch4r';
 root = 'C:\Users\mtanha\MSQC\msqc\datasets';
-filename = 'butaner-orig';
+filename = 'tbutaner-orig';
 dataroot = [root,'\',filename];
 
 loadResults = 0;
-tplName = 'Butane';
+tplName = 'tbutane';
 if (~exist(dataroot,'dir'))
     mkdir(dataroot,'s');
-    copyfile('templates/butane.tpl',[dataroot,'/butane.tpl']);
-    copyfile('templates/butane-gen.tpl',[dataroot,'/butane-gen.tpl']);
+    copyfile('templates/tbutane.tpl',[dataroot,'/tbutane.tpl']);
+    copyfile('templates/tbutane-gen.tpl',[dataroot,'/tbutane-gen.tpl']);
     copyfile('datasets/envprop.mat',[dataroot,'/envprop.mat']);
 end
 
@@ -76,10 +76,10 @@ else
             angles = [rr1(t1,t2) rr1(t1,t2) rr1(t1,t2)...
                 rr1(t1,t2) rr1(t1,t2) rr1(t1,t2) rr1(t1,t2) rr1(t1,t2)...
                 rr1(t1,t2) rr1(t1,t2) rr1(t1,t2) rr1(t1,t2)];
-            
-            dihedrals = [ rr1(p1,p2) -rr1(p3,p4) rr1(p5,p6) -rr1(p5,p6)...
-                rr1(p1,p2) rr1(p3,p4) -rr1(p3,p4) rr1(p3,p4) -rr1(p3,p4)...
-                rr1(p3,p4) rr1(p1,p2)];
+
+            dihedrals = [ rr1(p5,p6) -rr1(p3,p4) rr1(p5,p6) -rr1(p5,p6)...
+                rr1(p1,p2) rr1(p1,p2) -rr1(p3,p4) rr1(p3,p4) rr1(p3,p4)...
+                rr1(p1,p2) -rr1(p3,p4)];
             
             par = [bonds,angles,dihedrals];
             
