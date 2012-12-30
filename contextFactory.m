@@ -24,9 +24,10 @@ if (h2fits)
 else
 % CREATE MODEL SETS
 
-dataf = {'butaner-orig'};%'ch4rDat-1c','ch4rDat-diponly','ch4rDat-linrho','ethanerDat'};
 
- pnn = [791,792,793,794];
+% dataf = {'ch4rDat','ch4rDat-1c','ch4rDat-diponly','ch4rDat-linrho','ethanerDat','ethylenerDat'};
+dataf = {'ethanerDat'};%{'ch4rDat' ,'ethanerDat'};% ,'ethylenerDat'};
+pnn = [791,792,793];
 
 dsets = cell(1,2);
 dname = cell(1,1);
@@ -210,7 +211,7 @@ for ipol = 1:length(policies)
       fact.makeMixInfo(dsets{idata,1}.atomTypes);
       f1    = fact.makeFitme(dsets{idata,1});
       ftest = fact.makeFitme(dsets{idata,2});
-      
+      input junk;
       fprintf(summaryFile,'train and test starting error \n');
       f1.printEDetails(summaryFile);
       ftest.printEDetails(summaryFile);
