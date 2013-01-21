@@ -5,7 +5,7 @@ reset(RandStream.getDefaultStream,sum(100*clock))
 %root = 'c:\dave\apoly\msqc\dataz';
 %dataroot = 'c:/dave/apoly/msqc/dataz/ch4r';
 root = 'C:\Users\mtanha\MSQC\msqc\datasets';
-filename = 'tbutaner-orig';
+filename = 'tbutaner2-orig';
 dataroot = [root,'\',filename];
 
 loadResults = 0;
@@ -29,16 +29,16 @@ nenv = length(env);
 
 r1 = 1.54 - 0.15;
 r2 = 1.54 + 0.15;
-r3  = 1.10 - 0.10;
-r4 = 1.10 + 0.10;
-t1 = 109.5 + 9.0;
-t2 = 109.5 - 9.0;
-p1 = 180.0 - 9.0;
-p2 = 180.0 + 9.0;
-p3 = 60 - 9.0;
-p4 = 60 + 9.0;
-p5 = 120 - 9.0;
-p6 = 120 + 9.0;
+r3  = 1.12 - 0.15;
+r4 = 1.12 + 0.15;
+t1 = 109.5 + 6.0;
+t2 = 109.5 - 6.0;
+p1 = 180.0 - 7.0;
+p2 = 180.0 + 7.0;
+p3 = 60 - 7.0;
+p4 = 60 + 7.0;
+p5 = 120 - 7.0;
+p6 = 120 + 7.0;
 
 pars = cell(0,0);
 maxpars =20;
@@ -61,9 +61,9 @@ if (loadResults)
 end
 
 %%
-if (exist('ethane/butaner-orig.mat','file'))
+if (exist('ethane/tbutaner2-orig.mat','file'))
     disp('loading existing data');
-    load('ethane/butaner-orig.mat');
+    load('ethane/tbutaner2-orig.mat');
 else
     for ipar = 1:maxpars
         if (loadResults)
