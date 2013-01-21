@@ -7,7 +7,7 @@ end
 %% bigPlot2
 function bigPlot2()
 dataroot = ...
-   'C:\Users\yaron\Documents\My Dropbox\MSQCdata\dec12e\iter100\w1\hybridslater1\ethanerDat';
+   'C:\Users\Matteus\Research\testmsqc';
 load([dataroot, '\bigplot.mat']);
 ethTrain = 1; ethTest = 2; meth = 3; prop = 4; nbut = 5; tbut = 6;
 nC = [2,2,1,3,4,4];
