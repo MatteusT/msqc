@@ -14,8 +14,8 @@ if (obj.hybrid == 1)
    rot1 = getRotationSigma(mod,atom1,atom2);
    rot2 = getRotationSigma(mod,atom2,atom1);
 elseif (obj.hybrid == 2)
-   rot1 = getRotationPi(mod,atom1);
-   rot2 = getRotationPi(mod,atom2);
+   rot1 = getRotationPi(mod,atom1,atom2);
+   rot2 = getRotationPi(mod,atom2,atom1);
 end
 % We will use a,b for hybrid orbitals and j,k for non-hybrid orbitals
 % We first determine the original H elements between the hybrid orbs:
@@ -72,7 +72,7 @@ else
 end
 end
 
-function rot = getRotationPi(mod,a1)
+function rot = getRotationPi(mod,a1,a2)
 % For double bonds, we use one mixer to do the sigma bond and a different
 % mixer to do the pi bond. For the pi bond, we do the same thing as above, 
 % but we use the non-hybridized p-orbital instead of the hybrid.
@@ -92,6 +92,13 @@ r1 = mod.rcart(:,bondedAtoms(1));
 r2 = mod.rcart(:,bondedAtoms(2));
 r3 = mod.rcart(:,bondedAtoms(3));
 rperp = cross(r2-r1,r3-r1);
+rperp = rperp/norm(rperp);
+% subtract off component that lies along the atom1--atom2 bond
+ratom1 = mod.rcart(:,a1);
+ratom2 = mod.rcart(:,a2);
+rbond = ratom2-ratom1;
+ebond = rbond/norm(rbond);
+rperp = rperp-(rperp'*ebond).*ebond;
 rperp = rperp/norm(rperp);
 rot = [0.0; rperp];
 

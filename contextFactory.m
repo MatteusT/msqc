@@ -26,7 +26,7 @@ else
 
 
 % dataf = {'ch4rDat','ch4rDat-1c','ch4rDat-diponly','ch4rDat-linrho','ethanerDat','ethylenerDat'};
-dataf = {'ethanerDat'};%{'ch4rDat' ,'ethanerDat'};% ,'ethylenerDat'};
+dataf = {'ethylenerDat'}; %'ethanerDat'};%{'ch4rDat' ,'ethanerDat'};% ,'ethylenerDat'};
 pnn = [791,792,793];
 
 dsets = cell(1,2);
@@ -158,7 +158,7 @@ else
 % policies{end+1} = m1.policy;
 % m1 = [];
 
-pname{end+1} = 'hybridslater';
+pname{end+1} = 'modhybridslater';
 m1 = MFactory;
 % Diag core on C only
 m1.addPolicy('o','*', 'i',6, 'f','scale',  'sp','core');
