@@ -94,12 +94,12 @@ r3 = mod.rcart(:,bondedAtoms(3));
 rperp = cross(r2-r1,r3-r1);
 rperp = rperp/norm(rperp);
 % subtract off component that lies along the atom1--atom2 bond
-ratom1 = mod.rcart(:,a1);
-ratom2 = mod.rcart(:,a2);
-rbond = ratom2-ratom1;
-ebond = rbond/norm(rbond);
-rperp = rperp-(rperp'*ebond).*ebond;
-rperp = rperp/norm(rperp);
+% ratom1 = mod.rcart(:,a1);
+% ratom2 = mod.rcart(:,a2);
+% rbond = ratom2-ratom1;
+% ebond = rbond/norm(rbond);
+% rperp = rperp-(rperp'*ebond).*ebond;
+% rperp = rperp/norm(rperp);
 rot = [0.0; rperp];
 
 end
