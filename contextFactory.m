@@ -158,7 +158,7 @@ else
 % policies{end+1} = m1.policy;
 % m1 = [];
 
-pname{end+1} = 'modhybridslater';
+pname{end+1} = 'Planehybridslater';
 m1 = MFactory;
 % Diag core on C only
 m1.addPolicy('o','*', 'i',6, 'f','scale',  'sp','core');
