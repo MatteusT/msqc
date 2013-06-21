@@ -158,7 +158,7 @@ else
 % policies{end+1} = m1.policy;
 % m1 = [];
 
-pname{end+1} = 'Planehybridslater';
+pname{end+1} = 'slaterDiffPlane';
 m1 = MFactory;
 % Diag core on C only
 m1.addPolicy('o','*', 'i',6, 'f','scale',  'sp','core');
@@ -167,7 +167,7 @@ m1.addPolicy('o','EN', 'i','*', 'f','scale',  'sp','separate', 'c','r q bo');
 m1.addPolicy('o','E2', 'i','*', 'f','scale',  'sp','slater', 'c','r q bo');
 
 % Bonding
-m1.addPolicy('o','*', 'i','*', 'j','*', 'f','scale',  'sp','hybrid', 'c','r bo q');
+m1.addPolicy('o','*', 'i','*', 'j','*', 'f','scale',  'sp','separate', 'c','r bo q');
 % nonbond between hydrogen
 m1.addPolicy('o','E2', 'i',1,   'j',1,  'f','scale',  'sp','sonly',  ...
    'c','bo','nb',1);
