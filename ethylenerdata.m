@@ -3,16 +3,16 @@ clear classes;
 reset(RandStream.getDefaultStream,sum(100*clock))
 
 %root = 'c:\matdl\ethylener';
-dataroot = 'c:\matdl\data\ethylener2';
+dataroot = 'c:\matdl\data\ethylenerGeom';
 if (~exist(dataroot,'dir'))
    mkdir(dataroot);
    copyfile('templates/ethylener.tpl',[dataroot,'/ethylener.tpl']);
    copyfile('templates/ethylener-gen.tpl',[dataroot,'/ethylener-gen.tpl']);
-   copyfile('ethane4mp2/env2.mat',[dataroot,'/env2.mat']);
+%    copyfile('ethane4mp2/env2.mat',[dataroot,'/env2.mat']);
 end
 
-load([dataroot,'/env2.mat']);
-nenv = 50;
+% load([dataroot,'/env2.mat']);
+nenv = 0;
 
 % structure will hold the characteristics of each of the parameters
 randPars = {};
@@ -46,6 +46,7 @@ randPars{end+1} = t1;
 % t1.low = -90;
 % t1.high = 90;
 % randPars{end+1} = t1;
+%constrained dihed
 t1.type = 'constrained dihedral';
 t1.low = -7;
 t1.high = +7;
@@ -57,11 +58,11 @@ t1.high = 180;
 randPars{end+1} = t1;
 
 pars = cell(0,0);
-maxpars = 100;
+% maxpars = 100;
 HLbasis = {'6-31G'};% '6-31G*' '6-31G**'};
 HL = cell(0,0);
 LL = cell(0,0);
-loadResults = 1;
+loadResults = 0;
 % Find all pars for which a calculation exists
 if (loadResults)
    lfiles = dir([dataroot,'/*_cfg.mat']);
@@ -76,7 +77,7 @@ if (loadResults)
    end
    maxpars = length(parsIn)-1; % contrl-C'd job, so last one not done
 end
-maxpars = 30;
+maxpars = 2;
 %%
 for ipar = 1:maxpars
    %pars{1} = [1.12 1.12 1.12 1.12 109.47 109.47 109.47 120.0 -120.0];
@@ -92,7 +93,7 @@ for ipar = 1:maxpars
    disp([num2str(ipar),' par = ',num2str(par)]);
    
    config = Fragment.defaultConfig();
-   config.method = 'MP2';
+   config.method = 'HF';
    config.par = par;
    
    % HL
@@ -142,7 +143,7 @@ for ipar = 1:maxpars
 end
 
 % since even loading all the files will take time, we'll dave everything
-save([dataroot,'/ethylener2Dat.mat'],'LL','HL');
+save([dataroot,'/ethylenerGeom.mat'],'LL','HL');
 
 
 
