@@ -61,7 +61,9 @@ else
    if (coord == 4) % sp3 hybridization
       rot = [0.5; (sqrt(3)/2.0) * r12];
    elseif (coord == 3) % sp2 hybridization
-      rot = [1.0/sqrt(3.0); sqrt(1.5) * r12];
+      rot = [1.0/sqrt(3.0); sqrt(2/3) * r12]; 
+      %changed c2 here from sqrt(1.5) to the correct value of sqrt(2/3),
+      %need to see if there will be any difference
    elseif (coord == 2)
       rot = (1.0/sqrt(2.0)) * [1; r12];
    else
@@ -88,10 +90,11 @@ if (coord ~= 3)
    error('pi bond between atoms without 3 fold coordination');
 end
 [junk,bondedAtoms] = find(bonded == 1);
+r0 = mod.rcart(:,a1);
 r1 = mod.rcart(:,bondedAtoms(1));
 r2 = mod.rcart(:,bondedAtoms(2));
 r3 = mod.rcart(:,bondedAtoms(3));
-rperp = cross(r2-r1,r3-r1);
+rperp = cross(r1-r0,r2-r0);
 rperp = rperp/norm(rperp);
 % subtract off component that lies along the atom1--atom2 bond
 % ratom1 = mod.rcart(:,a1);
