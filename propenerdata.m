@@ -28,11 +28,11 @@ t1.low = 1.36 - 0.15;
 t1.high = 1.36 + 0.15;
 randPars{end+1} = t1;
 
-% next 5 are c-H bonds
+% next 6 are C-H bonds
 t1.type = 'CH bond';
 t1.low = 1.1 - 0.15;
 t1.high = 1.1 + 0.15;
-for i1 = 1:5
+for i1 = 1:6
    randPars{end+1} = t1;
 end
 
@@ -49,7 +49,7 @@ t1.high = 109 + 6;
 for i1 = 1:3
    randPars{end+1} = t1;
 end
-% next is H-C-C bond angles
+% next 3 is H-C-C bond angles
 t1.type = 'HCC angle';
 t1.low = 120 - 6;
 t1.high = 120 + 6;
