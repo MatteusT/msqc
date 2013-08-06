@@ -14,8 +14,8 @@ if (obj.hybrid == 1)
    rot1 = getRotationSigma(mod,atom1,atom2);
    rot2 = getRotationSigma(mod,atom2,atom1);
 elseif (obj.hybrid == 2)
-   rot1 = getRotationPi(mod,atom1,atom2);
-   rot2 = getRotationPi(mod,atom2,atom1);
+       rot1 = getRotationPi(mod,atom1,atom2);
+       rot2 = getRotationPi(mod,atom2,atom1);
 end
 % We will use a,b for hybrid orbitals and j,k for non-hybrid orbitals
 % We first determine the original H elements between the hybrid orbs:
@@ -61,9 +61,7 @@ else
    if (coord == 4) % sp3 hybridization
       rot = [0.5; (sqrt(3)/2.0) * r12];
    elseif (coord == 3) % sp2 hybridization
-      rot = [1.0/sqrt(3.0); sqrt(2/3) * r12]; 
-      %changed c2 here from sqrt(1.5) to the correct value of sqrt(2/3),
-      %need to see if there will be any difference
+      rot = [1.0/sqrt(3.0); sqrt(2/3) * r12];
    elseif (coord == 2)
       rot = (1.0/sqrt(2.0)) * [1; r12];
    else
@@ -90,19 +88,18 @@ if (coord ~= 3)
    error('pi bond between atoms without 3 fold coordination');
 end
 [junk,bondedAtoms] = find(bonded == 1);
-r0 = mod.rcart(:,a1);
 r1 = mod.rcart(:,bondedAtoms(1));
 r2 = mod.rcart(:,bondedAtoms(2));
 r3 = mod.rcart(:,bondedAtoms(3));
-rperp = cross(r1-r0,r2-r0);
+rperp = cross(r2-r1,r3-r1);
 rperp = rperp/norm(rperp);
 % subtract off component that lies along the atom1--atom2 bond
-% ratom1 = mod.rcart(:,a1);
-% ratom2 = mod.rcart(:,a2);
-% rbond = ratom2-ratom1;
-% ebond = rbond/norm(rbond);
-% rperp = rperp-(rperp'*ebond).*ebond;
-% rperp = rperp/norm(rperp);
+ratom1 = mod.rcart(:,a1);
+ratom2 = mod.rcart(:,a2);
+rbond = ratom2-ratom1;
+ebond = rbond/norm(rbond);
+rperp = rperp-(rperp'*ebond).*ebond;
+rperp = rperp/norm(rperp);
 rot = [0.0; rperp];
 
 end
