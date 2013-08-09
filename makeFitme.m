@@ -53,7 +53,6 @@ geomsC2H5F = checkForInput(varargin,'c2h5f',[]); % allowed range is 1:9
 includeKEmods = checkForInput(varargin,'kemods',1);
 includeENmods = checkForInput(varargin,'enmods',1);
 useDeltaCharges = checkForInput(varargin,'deltarho',1);
-addAllMixers = checkForInput(varargin,'allMixers',1);
 enstruct = checkForInput(varargin,'enstruct',[]);
 enstruct1 = checkForInput(varargin,'enstruct1',[]);
 enstructh = checkForInput(varargin,'enstructh',[]);
@@ -62,8 +61,7 @@ kestructh = checkForInput(varargin,'kestructh',[]);
 e2struct = checkForInput(varargin,'e2struct',[]);
 testFitme = checkForInput(varargin,'testFitme',[]);
 silent = checkForInput(varargin,'silent',0);
-separateSP = checkForInput(varargin,'separateSP',0);
-atomTyping = checkForInput(varargin,'atomTyping',0);
+verify = checkForInput(varargin,'verify',0);
 
 if (~isempty(enstruct) && ~isempty(enstruct1))
    error('Do not set both enstruct and enstruct1');
@@ -172,14 +170,6 @@ m = cell(1,size(params,2));
 for ipar = params
    m{ipar} = Model3(LL{ipar,1},LL{ipar,2},LL{ipar,3});
 end
-if (atomTyping)
-    for ipar = params
-   m{ipar}.atomTyping;
-    end
-end
-
-    
-
 if (includeKEmods)
    if (isempty(kestruct) && isempty(kestructh))
       mixKEdiagH = Mixer([0 0],2,'KEdiagH');
@@ -197,7 +187,6 @@ if (includeKEmods)
          m{ipar}.addKEmodBonded(1,6,1,1,mixKEbondCH);
          m{ipar}.addKEmodBonded(1,6,1,2,mixKEbondCHp);
          m{ipar}.addKEmodBonded(6,6,[1 2],[1 2],mixKEbondCC);
-
       end
    elseif (size(kestruct,1) == 1)
       for ipar = params
@@ -220,7 +209,6 @@ if (includeKEmods)
          m{ipar}.addKEmodBondedh(1,6,kestructh.CH);
          m{ipar}.addKEmodBondedh(6,6,kestructh.CCs);
          m{ipar}.addKEmodBondedh(6,6,kestructh.CCp);
-
       end
    end
 end
@@ -291,50 +279,8 @@ if (~isempty(e2struct) > 0)
    end
 end
 
-
-%% add all possible mixers
-
-if (addAllMixers)
-   % determine atom types in the train set
-   allTypes = [];
-   for ipar = params
-      allTypes = [allTypes,m{ipar}.aType];
-   end
-   atypes = unique(allTypes);
-   z = zeros(size(atypes));
-   for i = 1:length(atypes)
-       if atypes(i)>100
-       z(i) = round(atypes(i)/100);
-       else
-       z(i) = atypes(i);
-       end
-   end
-   % add all diagonal mixers
-   iP2 = [1 0 0 0];
-   iP3 = [1 0 0 0 0];
-   opers = {'ke ','en ','e2 '};
-   for oper = opers
-      for itype = 1:length(atypes)
-         atype = atypes(itype);
-         mixS = Mixer(iP3,11,' ',3);
-         if (~separateSP || (z(itype) == 1))
-            mixP = mixS;
-            mixS.desc = [oper,int2str(atype)];
-         else
-            mixP = Mixer(iP3,11,' ',3);
-            mixS.desc = [oper,int2str(atype),'  s'];
-            mixP.desc = [oper,int2str(atype),'  p'];
-         end
-         for ipar = params
-            if (strcmp(oper,'en '))
-               m{ipar}.addKEmodDiag(z(itype),1,mixS);
-               if (z(itype) > 1)
-                  m{ipar}.addKEmodDiag(z(itype),2,mixP);
-               end
-            end
-         end
-      end
-   end
+for ipar = params
+    m{ipar}.verify = verify;
 end
 
 if (useDeltaCharges)
