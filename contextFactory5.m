@@ -1,6 +1,6 @@
 clear classes;
 close all;
-topDir = 'd:/matdl/yaron/aug13/errJacPar/';
+topDir = 'C:\Users\Matteus\MSQCdata\Eric\';
 maxIter = 10;
 epsTest = -1;
 updateContext = 0;
@@ -23,24 +23,29 @@ dname1=cell(0,0); fname=cell(0,0);
 gTrain=cell(0,0); gTest=cell(0,0);
 eTrain=cell(0,0); eTest=cell(0,0); pnn=[];
 
-h2 = 1;
-fname{end+1} = 'h2Dat'; dname1{end+1}=fname{end};
-gTrain{end+1}=[1 3 5 7];  eTrain{end+1}=1:2:20;
-gTest{end+1} =[2 4 6];    eTest{end+1} =2:2:20; pnn(end+1) = 796;
-ch4r = 2;
-fname{end+1} = 'ch4rDat'; dname1{end+1}=fname{end};
-gTrain{end+1}=1:10;  eTrain{end+1}=1:2:20;
-gTest{end+1} =11:20; eTest{end+1} =2:2:20; pnn(end+1) = 791;
-ethaner = 3;
-fname{end+1} = 'ethanerDat'; dname1{end+1}=fname{end};
-gTrain{end+1}=1:10;  eTrain{end+1}=1:2:20;
-gTest{end+1} =11:20; eTest{end+1} =2:2:20; pnn(end+1) = 792;
-ethylener =4;
-fname{end+1} = 'ethylenerDat'; dname1{end+1}=fname{end};
-gTrain{end+1}=1:10;  eTrain{end+1}=1:2:20;
-gTest{end+1} =11:20; eTest{end+1} =2:2:20; pnn(end+1) = 793;
+% h2 = 5;
+% fname{end+1} = 'h2Dat'; dname1{end+1}=fname{end};
+% gTrain{end+1}=[1 3 5 7];  eTrain{end+1}=1:2:20;
+% gTest{end+1} =[2 4 6];    eTest{end+1} =2:2:20; pnn(end+1) = 796;
+% ch4r = 2;
+% fname{end+1} = 'ch4rDat'; dname1{end+1}=fname{end};
+% gTrain{end+1}=1:10;  eTrain{end+1}=1:2:20;
+% gTest{end+1} =11:20; eTest{end+1} =2:2:20; pnn(end+1) = 791;
+% ethaner = 3;
+% fname{end+1} = 'ethanerDat'; dname1{end+1}=fname{end};
+% gTrain{end+1}=1:10;  eTrain{end+1}=1:2:20;
+% gTest{end+1} =11:20; eTest{end+1} =2:2:20; pnn(end+1) = 792;
+% ethylener =4;
+% fname{end+1} = 'ethylenerDat'; dname1{end+1}=fname{end};
+% gTrain{end+1}=1:10;  eTrain{end+1}=1:2:20;
+% gTest{end+1} =11:20; eTest{end+1} =2:2:20; pnn(end+1) = 793;
+ericData = 1
+fname{end+1} = 'Eric1'; dname1{end+1}=fname{end};
+gTrain{end+1}=1:3;  eTrain{end+1}=0;
+gTest{end+1} =4:5; eTest{end+1} =0; pnn(end+1) = 794;
 
-toFit = {[h2]};%{[ch4r], [ethaner], [ch4r,ethaner]};
+
+toFit = {[ericData]};%{[ch4r], [ethaner], [ch4r,ethaner]};
 
 dsets = cell(1,2);
 dname = cell(1,1);
@@ -58,7 +63,7 @@ for ifit = 1:length(toFit)
    mtrain = MSet;
    mtest  = MSet;
    for idata = toFit{ifit}
-      dfile = ['d:/dave/apoly/msqcData/datasets/',fname{idata},'.mat'];
+      dfile = ['C:\Users\Matteus\MSQCdata\Eric\',fname{idata},'.mat'];
       mtrain.addData(dfile, gTrain{idata}, eTrain{idata} ,1,pnn(idata));
       mtest.addData(dfile,  gTest{idata},  eTest{idata}  ,1,pnn(idata));
    end
@@ -81,7 +86,7 @@ for ipol = 1:length(pname)
       if (exist(dataDir,'dir') ~= 7)
          status = mkdir(dataDir);
       end
-      copyfile('d:/dave/apoly/msqc/contextFactory4.m',...
+      copyfile('C:\Users\Matteus\MSQCdata\Eric\contextFactory5.m',...
           [dataDir,'/contextFactory4.m']);
       summaryName = [topDir,filePre,'/summary.txt'];
       % if (exist(summaryName,'file'))
